@@ -1,0 +1,58 @@
+/* Estilo para el cuerpo de la página */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f0f2f5; /* Fondo gris claro */
+    font-family: Arial, sans-serif;
+}
+
+/* Contenedor del formulario de inicio de sesión */
+.login-container {
+    width: 300px;
+    padding: 2rem;
+    background-color: #fff; /* Fondo blanco para el formulario */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Título del formulario */
+h2 {
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+
+/* Etiquetas de los campos de entrada */
+label {
+    font-size: 0.9rem;
+    color: #555;
+}
+
+/* Estilos para los campos de entrada de texto y contraseña */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 0.5rem;
+    margin: 0.5rem 0 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Estilo para el botón de enviar */
+button {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: #007bff; /* Color azul para el botón */
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+/* Estilo del botón al pasar el mouse sobre él */
+button:hover {
+    background-color: #0056b3;
+}
