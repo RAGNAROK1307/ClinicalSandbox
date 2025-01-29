@@ -1,7 +1,7 @@
 package db
 
 import (
-	"ClinicalSandBox/pkg/API/models"
+	"ClinicalSandBox/internal/API/models"
 )
 
 func AutoMigrate() {

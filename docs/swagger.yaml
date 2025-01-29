@@ -1,5 +1,439 @@
 definitions:
-  dto.CreateRoleDTO:
+  models.ClinicalNote:
+    properties:
+      consultationVisit:
+        $ref: '#/definitions/models.ConsultationVisit'
+      id_consulta:
+        type: integer
+      notas_progreso:
+        type: string
+      observaciones_recomendaciones:
+        type: string
+    type: object
+  models.ConsentAuthorization:
+    properties:
+      detalles:
+        type: string
+      fecha_consentimiento:
+        type: string
+      id_paciente:
+        type: integer
+      patient:
+        $ref: '#/definitions/models.Patient'
+      ruta_archivo_externo:
+        type: string
+      tipo_consentimiento:
+        type: string
+    type: object
+  models.ConsultationVisit:
+    properties:
+      fecha_hora_visita:
+        type: string
+      hospitalEmployee:
+        $ref: '#/definitions/models.HospitalEmployee'
+      id_paciente:
+        type: integer
+      id_personal_hospital:
+        type: integer
+      notas_medicas:
+        type: string
+      patient:
+        $ref: '#/definitions/models.Patient'
+      razon_visita:
+        type: string
+      resultados_examenes:
+        type: string
+    type: object
+  models.DemographicData:
+    properties:
+      estado_civil:
+        type: string
+      informacion_etnica_racial:
+        type: string
+      informacion_laboral:
+        type: string
+      nacionalidad:
+        type: string
+    type: object
+  models.DiagnosticImage:
+    properties:
+      consultationVisit:
+        $ref: '#/definitions/models.ConsultationVisit'
+      descripcion:
+        type: string
+      fecha_imagen:
+        type: string
+      id_consulta:
+        type: integer
+      interpretacion_imagen:
+        type: string
+      ruta_archivo_externo:
+        type: string
+      tipo_imagen:
+        type: string
+    type: object
+  models.HospitalEmployee:
+    properties:
+      direccion:
+        type: string
+      fecha_nacimiento:
+        type: string
+      genero:
+        type: string
+      id_identificacion:
+        type: integer
+      id_rol:
+        description: Llave foránea que referencia la tabla roles
+        type: integer
+      identification:
+        $ref: '#/definitions/models.Identification'
+      nombre_completo:
+        type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/models.Role'
+        description: Carga la información del rol relacionado
+      telefono:
+        type: string
+    type: object
+  models.Identification:
+    properties:
+      numero_documento:
+        type: string
+      tipo_documento:
+        type: string
+    type: object
+  models.Laboratory:
+    properties:
+      consultationVisit:
+        $ref: '#/definitions/models.ConsultationVisit'
+      fecha_prueba:
+        type: string
+      id_consulta:
+        type: integer
+      resultados_prueba:
+        type: string
+      ruta_archivo_externo:
+        type: string
+      tipo_prueba:
+        type: string
+    type: object
+  models.MedicalRecord:
+    properties:
+      alergias:
+        type: string
+      antecedentes_familiares:
+        type: string
+      diagnosticos_previos:
+        type: string
+      enfermedades_cronicas:
+        type: string
+      fecha_actualizacion_historial:
+        type: string
+      fecha_creacion_historial:
+        type: string
+      historial_cirugias:
+        type: string
+      id_paciente:
+        description: Llave foránea que referencia la tabla roles
+        type: integer
+      medicamentos_actuales:
+        type: string
+      patient:
+        $ref: '#/definitions/models.Patient'
+    type: object
+  models.Patient:
+    properties:
+      demographicData:
+        $ref: '#/definitions/models.DemographicData'
+      direccion:
+        type: string
+      fecha_nacimiento:
+        type: string
+      genero:
+        type: string
+      id_datos_demograficos:
+        type: integer
+      id_identificacion:
+        type: integer
+      id_rol:
+        description: Llave foránea que referencia la tabla roles
+        type: integer
+      id_usuarios:
+        type: integer
+      identification:
+        $ref: '#/definitions/models.Identification'
+      nombre_completo:
+        type: string
+      numero_seguro_social:
+        type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/models.Role'
+        description: Carga la información del rol relacionado
+      telefono:
+        type: string
+      user:
+        $ref: '#/definitions/models.User'
+    type: object
+  models.Role:
+    properties:
+      descripcion:
+        type: string
+      nombre_rol:
+        type: string
+    type: object
+  models.TreatmentPrescription:
+    properties:
+      dosis:
+        type: string
+      duracion_tratamiento:
+        type: string
+      frecuencia:
+        type: string
+      id_paciente:
+        type: integer
+      instrucciones:
+        type: string
+      medicamento_prescrito:
+        type: string
+      patient:
+        $ref: '#/definitions/models.Patient'
+    type: object
+  models.User:
+    properties:
+      contraseña:
+        type: string
+      id_rol:
+        description: Llave foránea que referencia la tabla roles
+        type: integer
+      nombre_usuario:
+        type: string
+      role:
+        allOf:
+        - $ref: '#/definitions/models.Role'
+        description: Carga la información del rol relacionado
+    type: object
+  request.CreateClinicalNoteDTO:
+    properties:
+      id_consulta:
+        type: integer
+      notas_progreso:
+        type: string
+      observaciones_recomendaciones:
+        type: string
+    required:
+    - id_consulta
+    - notas_progreso
+    - observaciones_recomendaciones
+    type: object
+  request.CreateConsentAuthorizationDTO:
+    properties:
+      detalles:
+        type: string
+      fecha_consentimiento:
+        example: "2025-01-20"
+        type: string
+      id_paciente:
+        type: integer
+      ruta_archivo_externo:
+        type: string
+      tipo_consentimiento:
+        type: string
+    required:
+    - detalles
+    - fecha_consentimiento
+    - id_paciente
+    - ruta_archivo_externo
+    - tipo_consentimiento
+    type: object
+  request.CreateConsultationVisitDTO:
+    properties:
+      fecha_hora_visita:
+        type: string
+      id_paciente:
+        type: integer
+      id_personal_hospital:
+        type: integer
+      notas_medicas:
+        type: string
+      razon_visita:
+        type: string
+      resultados_examenes:
+        type: string
+    required:
+    - fecha_hora_visita
+    - id_paciente
+    - id_personal_hospital
+    - notas_medicas
+    - razon_visita
+    - resultados_examenes
+    type: object
+  request.CreateDemographicDataDTO:
+    properties:
+      estado_civil:
+        type: string
+      informacion_etnica_racial:
+        type: string
+      informacion_laboral:
+        type: string
+      nacionalidad:
+        type: string
+    required:
+    - estado_civil
+    - informacion_etnica_racial
+    - informacion_laboral
+    - nacionalidad
+    type: object
+  request.CreateDiagnosticImageDTO:
+    properties:
+      descripcion:
+        type: string
+      fecha_imagen:
+        example: "2025-01-20"
+        type: string
+      id_consulta:
+        type: integer
+      interpretacion_imagen:
+        type: string
+      ruta_archivo_externo:
+        type: string
+      tipo_imagen:
+        type: string
+    required:
+    - descripcion
+    - fecha_imagen
+    - id_consulta
+    - interpretacion_imagen
+    - ruta_archivo_externo
+    - tipo_imagen
+    type: object
+  request.CreateHospitalEmployeeDTO:
+    properties:
+      direccion:
+        type: string
+      fecha_nacimiento:
+        example: "2025-01-20"
+        type: string
+      genero:
+        type: string
+      id_identificacion:
+        type: integer
+      id_rol:
+        description: ID del rol asociado, requerido
+        type: integer
+      nombre_completo:
+        type: string
+      telefono:
+        type: string
+    required:
+    - direccion
+    - fecha_nacimiento
+    - genero
+    - id_identificacion
+    - id_rol
+    - nombre_completo
+    - telefono
+    type: object
+  request.CreateIdentificationDTO:
+    properties:
+      numero_documento:
+        type: string
+      tipo_documento:
+        type: string
+    required:
+    - numero_documento
+    - tipo_documento
+    type: object
+  request.CreateLaboratoryDTO:
+    properties:
+      fecha_prueba:
+        example: "2025-01-20"
+        type: string
+      id_consulta:
+        type: integer
+      resultados_prueba:
+        type: string
+      ruta_archivo_externo:
+        type: string
+      tipo_prueba:
+        type: string
+    required:
+    - fecha_prueba
+    - id_consulta
+    - resultados_prueba
+    - ruta_archivo_externo
+    - tipo_prueba
+    type: object
+  request.CreateMedicalRecordDTO:
+    properties:
+      alergias:
+        type: string
+      antecedentes_familiares:
+        type: string
+      diagnosticos_previos:
+        type: string
+      enfermedades_cronicas:
+        type: string
+      fecha_actualizacion_historial:
+        type: string
+      fecha_creacion_historial:
+        type: string
+      historial_cirugias:
+        type: string
+      id_paciente:
+        description: ID del rol asociado, requerido
+        type: integer
+      medicamentos_actuales:
+        type: string
+    required:
+    - alergias
+    - antecedentes_familiares
+    - diagnosticos_previos
+    - enfermedades_cronicas
+    - fecha_actualizacion_historial
+    - fecha_creacion_historial
+    - historial_cirugias
+    - id_paciente
+    - medicamentos_actuales
+    type: object
+  request.CreatePatientDTO:
+    properties:
+      direccion:
+        type: string
+      fecha_nacimiento:
+        example: "2025-01-20"
+        type: string
+      genero:
+        type: string
+      id_datos_demograficos:
+        type: integer
+      id_identificacion:
+        type: integer
+      id_rol:
+        description: ID del rol asociado, requerido
+        type: integer
+      id_usuarios:
+        type: integer
+      nombre_completo:
+        type: string
+      numero_seguro_social:
+        type: string
+      telefono:
+        type: string
+    required:
+    - direccion
+    - fecha_nacimiento
+    - genero
+    - id_datos_demograficos
+    - id_identificacion
+    - id_rol
+    - id_usuarios
+    - nombre_completo
+    - numero_seguro_social
+    - telefono
+    type: object
+  request.CreateRoleDTO:
     properties:
       descripcion:
         type: string
@@ -9,16 +443,1296 @@ definitions:
     - descripcion
     - nombre_rol
     type: object
-  models.Role:
+  request.CreateTreatmentPrescriptionDTO:
     properties:
-      descripcion:
+      dosis:
         type: string
-      nombre_rol:
+      duracion_tratamiento:
         type: string
+      frecuencia:
+        type: string
+      id_paciente:
+        type: integer
+      instrucciones:
+        type: string
+      medicamento_prescrito:
+        type: string
+    required:
+    - dosis
+    - duracion_tratamiento
+    - frecuencia
+    - id_paciente
+    - instrucciones
+    - medicamento_prescrito
+    type: object
+  request.CreateUserDTO:
+    properties:
+      contraseña:
+        minLength: 8
+        type: string
+      id_rol:
+        description: ID del rol asociado, requerido
+        type: integer
+      nombre_usuario:
+        type: string
+    required:
+    - contraseña
+    - id_rol
+    - nombre_usuario
     type: object
 info:
   contact: {}
 paths:
+  /clinical_notes:
+    get:
+      description: Retrieve a list of all clinical_notes in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ClinicalNote'
+            type: array
+      summary: List all clinical_notes
+      tags:
+      - clinical_notes
+    post:
+      consumes:
+      - application/json
+      description: Adds a new clinical_note to the system
+      parameters:
+      - description: ClinicalNote data
+        in: body
+        name: clinical_note
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateClinicalNoteDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ClinicalNote'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new clinical_note
+      tags:
+      - clinical_notes
+  /clinical_notes/{id}:
+    delete:
+      description: Remove a clinical_note by its ID
+      parameters:
+      - description: ClinicalNote ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a clinical_note
+      tags:
+      - clinical_notes
+    get:
+      description: Retrieve a single clinical_note by its ID
+      parameters:
+      - description: ClinicalNote ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ClinicalNote'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a clinical_note by ID
+      tags:
+      - clinical_notes
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing clinical_note
+      parameters:
+      - description: ClinicalNote ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated clinical_note data
+        in: body
+        name: clinical_note
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateClinicalNoteDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ClinicalNote'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a clinical_note
+      tags:
+      - clinical_notes
+  /consent_authorizations:
+    get:
+      description: Retrieve a list of all consent_authorizations in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ConsentAuthorization'
+            type: array
+      summary: List all consent_authorizations
+      tags:
+      - consent_authorizations
+    post:
+      consumes:
+      - application/json
+      description: Adds a new consent_authorization to the system
+      parameters:
+      - description: ConsentAuthorization data
+        in: body
+        name: consent_authorization
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateConsentAuthorizationDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ConsentAuthorization'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new consent_authorization
+      tags:
+      - consent_authorizations
+  /consent_authorizations/{id}:
+    delete:
+      description: Remove a consent_authorization by its ID
+      parameters:
+      - description: ConsentAuthorization ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a consent_authorization
+      tags:
+      - consent_authorizations
+    get:
+      description: Retrieve a single consent_authorization by its ID
+      parameters:
+      - description: ConsentAuthorization ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ConsentAuthorization'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a consent_authorization by ID
+      tags:
+      - consent_authorizations
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing consent_authorization
+      parameters:
+      - description: ConsentAuthorization ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated consent_authorization data
+        in: body
+        name: consent_authorization
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateConsentAuthorizationDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ConsentAuthorization'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a consent_authorization
+      tags:
+      - consent_authorizations
+  /consultation_visits:
+    get:
+      description: Retrieve a list of all consultation_visits in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ConsultationVisit'
+            type: array
+      summary: List all consultation_visits
+      tags:
+      - consultation_visits
+    post:
+      consumes:
+      - application/json
+      description: Adds a new consultation_visit to the system
+      parameters:
+      - description: ConsultationVisit data
+        in: body
+        name: consultation_visit
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateConsultationVisitDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.ConsultationVisit'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new consultation_visit
+      tags:
+      - consultation_visits
+  /consultation_visits/{id}:
+    delete:
+      description: Remove a consultation_visit by its ID
+      parameters:
+      - description: ConsultationVisit ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a consultation_visit
+      tags:
+      - consultation_visits
+    get:
+      description: Retrieve a single consultation_visit by its ID
+      parameters:
+      - description: ConsultationVisit ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ConsultationVisit'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a consultation_visit by ID
+      tags:
+      - consultation_visits
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing consultation_visit
+      parameters:
+      - description: ConsultationVisit ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated consultation_visit data
+        in: body
+        name: consultation_visit
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateConsultationVisitDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ConsultationVisit'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a consultation_visit
+      tags:
+      - consultation_visits
+  /demographics_data:
+    get:
+      description: Retrieve a list of all demographics_data in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.DemographicData'
+            type: array
+      summary: List all demographics_data
+      tags:
+      - demographics_data
+    post:
+      consumes:
+      - application/json
+      description: Adds a new demographic_data to the system
+      parameters:
+      - description: DemographicData data
+        in: body
+        name: demographic_data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateDemographicDataDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.DemographicData'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new demographic_data
+      tags:
+      - demographics_data
+  /demographics_data/{id}:
+    delete:
+      description: Remove a demographic_data by its ID
+      parameters:
+      - description: DemographicData ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a demographic_data
+      tags:
+      - demographics_data
+    get:
+      description: Retrieve a single demographic_data by its ID
+      parameters:
+      - description: DemographicData ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DemographicData'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a demographic_data by ID
+      tags:
+      - demographics_data
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing demographic_data
+      parameters:
+      - description: DemographicData ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated demographic_data data
+        in: body
+        name: demographic_data
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateDemographicDataDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DemographicData'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a demographic_data
+      tags:
+      - demographics_data
+  /diagnostic_images:
+    get:
+      description: Retrieve a list of all diagnostic_images in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.DiagnosticImage'
+            type: array
+      summary: List all diagnostic_images
+      tags:
+      - diagnostic_images
+    post:
+      consumes:
+      - application/json
+      description: Adds a new diagnostic_image to the system
+      parameters:
+      - description: DiagnosticImage data
+        in: body
+        name: diagnostic_image
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateDiagnosticImageDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.DiagnosticImage'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new diagnostic_image
+      tags:
+      - diagnostic_images
+  /diagnostic_images/{id}:
+    delete:
+      description: Remove a diagnostic_image by its ID
+      parameters:
+      - description: DiagnosticImage ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a diagnostic_image
+      tags:
+      - diagnostic_images
+    get:
+      description: Retrieve a single diagnostic_image by its ID
+      parameters:
+      - description: DiagnosticImage ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DiagnosticImage'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a diagnostic_image by ID
+      tags:
+      - diagnostic_images
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing diagnostic_image
+      parameters:
+      - description: DiagnosticImage ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated diagnostic_image data
+        in: body
+        name: diagnostic_image
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateDiagnosticImageDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DiagnosticImage'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a diagnostic_image
+      tags:
+      - diagnostic_images
+  /hospital_employees:
+    get:
+      description: Retrieve a list of all hospital_employees in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.HospitalEmployee'
+            type: array
+      summary: List all hospital_employees
+      tags:
+      - hospital_employees
+    post:
+      consumes:
+      - application/json
+      description: Adds a new hospital_employee to the system
+      parameters:
+      - description: HospitalEmployee data
+        in: body
+        name: hospital_employee
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateHospitalEmployeeDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.HospitalEmployee'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new hospital_employee
+      tags:
+      - hospital_employees
+  /hospital_employees/{id}:
+    delete:
+      description: Remove a hospital_employee by its ID
+      parameters:
+      - description: HospitalEmployee ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a hospital_employee
+      tags:
+      - hospital_employees
+    get:
+      description: Retrieve a single hospital_employee by its ID
+      parameters:
+      - description: HospitalEmployee ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.HospitalEmployee'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a hospital_employee by ID
+      tags:
+      - hospital_employees
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing hospital_employee
+      parameters:
+      - description: HospitalEmployee ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated hospital_employee data
+        in: body
+        name: hospital_employee
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateHospitalEmployeeDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.HospitalEmployee'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a hospital_employee
+      tags:
+      - hospital_employees
+  /identifications:
+    get:
+      description: Retrieve a list of all identifications in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Identification'
+            type: array
+      summary: List all identifications
+      tags:
+      - identifications
+    post:
+      consumes:
+      - application/json
+      description: Adds a new identification to the system
+      parameters:
+      - description: Identification data
+        in: body
+        name: identification
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateIdentificationDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Identification'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new identification
+      tags:
+      - identifications
+  /identifications/{id}:
+    delete:
+      description: Remove a identification by its ID
+      parameters:
+      - description: Identification ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a identification
+      tags:
+      - identifications
+    get:
+      description: Retrieve a single identification by its ID
+      parameters:
+      - description: Identification ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Identification'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a identification by ID
+      tags:
+      - identifications
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing identification
+      parameters:
+      - description: Identification ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated identification data
+        in: body
+        name: identification
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateIdentificationDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Identification'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a identification
+      tags:
+      - identifications
+  /laboratories:
+    get:
+      description: Retrieve a list of all laboratories in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Laboratory'
+            type: array
+      summary: List all laboratories
+      tags:
+      - laboratories
+    post:
+      consumes:
+      - application/json
+      description: Adds a new laboratory to the system
+      parameters:
+      - description: Laboratory data
+        in: body
+        name: laboratory
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateLaboratoryDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Laboratory'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new laboratory
+      tags:
+      - laboratories
+  /laboratories/{id}:
+    delete:
+      description: Remove a laboratory by its ID
+      parameters:
+      - description: Laboratory ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a laboratory
+      tags:
+      - laboratories
+    get:
+      description: Retrieve a single laboratory by its ID
+      parameters:
+      - description: Laboratory ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Laboratory'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a laboratory by ID
+      tags:
+      - laboratories
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing laboratory
+      parameters:
+      - description: Laboratory ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated laboratory data
+        in: body
+        name: laboratory
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateLaboratoryDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Laboratory'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a laboratory
+      tags:
+      - laboratories
+  /medical_records:
+    get:
+      description: Retrieve a list of all medical_records in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.MedicalRecord'
+            type: array
+      summary: List all medical_records
+      tags:
+      - medical_records
+    post:
+      consumes:
+      - application/json
+      description: Adds a new medical_record to the system
+      parameters:
+      - description: MedicalRecord data
+        in: body
+        name: medical_record
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateMedicalRecordDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.MedicalRecord'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new medical_record
+      tags:
+      - medical_records
+  /medical_records/{id}:
+    delete:
+      description: Remove a medical_record by its ID
+      parameters:
+      - description: MedicalRecord ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a medical_record
+      tags:
+      - medical_records
+    get:
+      description: Retrieve a single medical_record by its ID
+      parameters:
+      - description: MedicalRecord ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MedicalRecord'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a medical_record by ID
+      tags:
+      - medical_records
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing medical_record
+      parameters:
+      - description: MedicalRecord ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated medical_record data
+        in: body
+        name: medical_record
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateMedicalRecordDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MedicalRecord'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a medical_record
+      tags:
+      - medical_records
+  /patients:
+    get:
+      description: Retrieve a list of all patients in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Patient'
+            type: array
+      summary: List all patients
+      tags:
+      - patients
+    post:
+      consumes:
+      - application/json
+      description: Adds a new patient to the system
+      parameters:
+      - description: Patient data
+        in: body
+        name: patient
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreatePatientDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Patient'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new patient
+      tags:
+      - patients
+  /patients/{id}:
+    delete:
+      description: Remove a patient by its ID
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a patient
+      tags:
+      - patients
+    get:
+      description: Retrieve a single patient by its ID
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Patient'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a patient by ID
+      tags:
+      - patients
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing patient
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated patient data
+        in: body
+        name: patient
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreatePatientDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Patient'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a patient
+      tags:
+      - patients
   /roles:
     get:
       description: Retrieve a list of all roles in the system
@@ -44,7 +1758,7 @@ paths:
         name: role
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateRoleDTO'
+          $ref: '#/definitions/request.CreateRoleDTO'
       produces:
       - application/json
       responses:
@@ -121,7 +1835,7 @@ paths:
         name: role
         required: true
         schema:
-          $ref: '#/definitions/dto.CreateRoleDTO'
+          $ref: '#/definitions/request.CreateRoleDTO'
       produces:
       - application/json
       responses:
@@ -144,4 +1858,254 @@ paths:
       summary: Update a role
       tags:
       - roles
+  /treatments_prescriptions:
+    get:
+      description: Retrieve a list of all treatments_prescriptions in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.TreatmentPrescription'
+            type: array
+      summary: List all treatments_prescriptions
+      tags:
+      - treatments_prescriptions
+    post:
+      consumes:
+      - application/json
+      description: Adds a new treatment_prescription to the system
+      parameters:
+      - description: TreatmentPrescription data
+        in: body
+        name: treatment_prescription
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateTreatmentPrescriptionDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.TreatmentPrescription'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new treatment_prescription
+      tags:
+      - treatments_prescriptions
+  /treatments_prescriptions/{id}:
+    delete:
+      description: Remove a treatment_prescription by its ID
+      parameters:
+      - description: TreatmentPrescription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a treatment_prescription
+      tags:
+      - treatments_prescriptions
+    get:
+      description: Retrieve a single treatment_prescription by its ID
+      parameters:
+      - description: TreatmentPrescription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TreatmentPrescription'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a treatment_prescription by ID
+      tags:
+      - treatments_prescriptions
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing treatment_prescription
+      parameters:
+      - description: TreatmentPrescription ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated treatment_prescription data
+        in: body
+        name: treatment_prescription
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateTreatmentPrescriptionDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TreatmentPrescription'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a treatment_prescription
+      tags:
+      - treatments_prescriptions
+  /users:
+    get:
+      description: Retrieve a list of all users in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: List all users
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      description: Adds a new user to the system
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new user
+      tags:
+      - users
+  /users/{id}:
+    delete:
+      description: Remove a user by its ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a user
+      tags:
+      - users
+    get:
+      description: Retrieve a single user by its ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a user by ID
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing user
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated user data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a user
+      tags:
+      - users
 swagger: "2.0"

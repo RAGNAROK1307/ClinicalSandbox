@@ -2,7 +2,7 @@ package main
 
 import (
 	"ClinicalSandBox/configs/db"
-	"ClinicalSandBox/pkg/API/routes"
+	"ClinicalSandBox/internal/API/routes"
 )
 
 func main() {

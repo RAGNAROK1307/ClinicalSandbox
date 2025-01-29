@@ -15,6 +15,1896 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/clinical_notes": {
+            "get": {
+                "description": "Retrieve a list of all clinical_notes in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clinical_notes"
+                ],
+                "summary": "List all clinical_notes",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ClinicalNote"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new clinical_note to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clinical_notes"
+                ],
+                "summary": "Create a new clinical_note",
+                "parameters": [
+                    {
+                        "description": "ClinicalNote data",
+                        "name": "clinical_note",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateClinicalNoteDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.ClinicalNote"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/clinical_notes/{id}": {
+            "get": {
+                "description": "Retrieve a single clinical_note by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clinical_notes"
+                ],
+                "summary": "Get a clinical_note by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ClinicalNote ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ClinicalNote"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing clinical_note",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "clinical_notes"
+                ],
+                "summary": "Update a clinical_note",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ClinicalNote ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated clinical_note data",
+                        "name": "clinical_note",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateClinicalNoteDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ClinicalNote"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a clinical_note by its ID",
+                "tags": [
+                    "clinical_notes"
+                ],
+                "summary": "Delete a clinical_note",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ClinicalNote ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/consent_authorizations": {
+            "get": {
+                "description": "Retrieve a list of all consent_authorizations in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "consent_authorizations"
+                ],
+                "summary": "List all consent_authorizations",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ConsentAuthorization"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new consent_authorization to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "consent_authorizations"
+                ],
+                "summary": "Create a new consent_authorization",
+                "parameters": [
+                    {
+                        "description": "ConsentAuthorization data",
+                        "name": "consent_authorization",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateConsentAuthorizationDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.ConsentAuthorization"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/consent_authorizations/{id}": {
+            "get": {
+                "description": "Retrieve a single consent_authorization by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "consent_authorizations"
+                ],
+                "summary": "Get a consent_authorization by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ConsentAuthorization ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ConsentAuthorization"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing consent_authorization",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "consent_authorizations"
+                ],
+                "summary": "Update a consent_authorization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ConsentAuthorization ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated consent_authorization data",
+                        "name": "consent_authorization",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateConsentAuthorizationDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ConsentAuthorization"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a consent_authorization by its ID",
+                "tags": [
+                    "consent_authorizations"
+                ],
+                "summary": "Delete a consent_authorization",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ConsentAuthorization ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/consultation_visits": {
+            "get": {
+                "description": "Retrieve a list of all consultation_visits in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "consultation_visits"
+                ],
+                "summary": "List all consultation_visits",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ConsultationVisit"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new consultation_visit to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "consultation_visits"
+                ],
+                "summary": "Create a new consultation_visit",
+                "parameters": [
+                    {
+                        "description": "ConsultationVisit data",
+                        "name": "consultation_visit",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateConsultationVisitDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.ConsultationVisit"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/consultation_visits/{id}": {
+            "get": {
+                "description": "Retrieve a single consultation_visit by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "consultation_visits"
+                ],
+                "summary": "Get a consultation_visit by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ConsultationVisit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ConsultationVisit"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing consultation_visit",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "consultation_visits"
+                ],
+                "summary": "Update a consultation_visit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ConsultationVisit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated consultation_visit data",
+                        "name": "consultation_visit",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateConsultationVisitDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.ConsultationVisit"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a consultation_visit by its ID",
+                "tags": [
+                    "consultation_visits"
+                ],
+                "summary": "Delete a consultation_visit",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ConsultationVisit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/demographics_data": {
+            "get": {
+                "description": "Retrieve a list of all demographics_data in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "demographics_data"
+                ],
+                "summary": "List all demographics_data",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DemographicData"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new demographic_data to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "demographics_data"
+                ],
+                "summary": "Create a new demographic_data",
+                "parameters": [
+                    {
+                        "description": "DemographicData data",
+                        "name": "demographic_data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateDemographicDataDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.DemographicData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/demographics_data/{id}": {
+            "get": {
+                "description": "Retrieve a single demographic_data by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "demographics_data"
+                ],
+                "summary": "Get a demographic_data by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DemographicData ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DemographicData"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing demographic_data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "demographics_data"
+                ],
+                "summary": "Update a demographic_data",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DemographicData ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated demographic_data data",
+                        "name": "demographic_data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateDemographicDataDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DemographicData"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a demographic_data by its ID",
+                "tags": [
+                    "demographics_data"
+                ],
+                "summary": "Delete a demographic_data",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DemographicData ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic_images": {
+            "get": {
+                "description": "Retrieve a list of all diagnostic_images in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "diagnostic_images"
+                ],
+                "summary": "List all diagnostic_images",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.DiagnosticImage"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new diagnostic_image to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "diagnostic_images"
+                ],
+                "summary": "Create a new diagnostic_image",
+                "parameters": [
+                    {
+                        "description": "DiagnosticImage data",
+                        "name": "diagnostic_image",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateDiagnosticImageDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.DiagnosticImage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic_images/{id}": {
+            "get": {
+                "description": "Retrieve a single diagnostic_image by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "diagnostic_images"
+                ],
+                "summary": "Get a diagnostic_image by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DiagnosticImage ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DiagnosticImage"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing diagnostic_image",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "diagnostic_images"
+                ],
+                "summary": "Update a diagnostic_image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DiagnosticImage ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated diagnostic_image data",
+                        "name": "diagnostic_image",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateDiagnosticImageDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.DiagnosticImage"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a diagnostic_image by its ID",
+                "tags": [
+                    "diagnostic_images"
+                ],
+                "summary": "Delete a diagnostic_image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DiagnosticImage ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/hospital_employees": {
+            "get": {
+                "description": "Retrieve a list of all hospital_employees in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hospital_employees"
+                ],
+                "summary": "List all hospital_employees",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.HospitalEmployee"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new hospital_employee to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hospital_employees"
+                ],
+                "summary": "Create a new hospital_employee",
+                "parameters": [
+                    {
+                        "description": "HospitalEmployee data",
+                        "name": "hospital_employee",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateHospitalEmployeeDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.HospitalEmployee"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/hospital_employees/{id}": {
+            "get": {
+                "description": "Retrieve a single hospital_employee by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hospital_employees"
+                ],
+                "summary": "Get a hospital_employee by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "HospitalEmployee ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.HospitalEmployee"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing hospital_employee",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "hospital_employees"
+                ],
+                "summary": "Update a hospital_employee",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "HospitalEmployee ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated hospital_employee data",
+                        "name": "hospital_employee",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateHospitalEmployeeDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.HospitalEmployee"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a hospital_employee by its ID",
+                "tags": [
+                    "hospital_employees"
+                ],
+                "summary": "Delete a hospital_employee",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "HospitalEmployee ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/identifications": {
+            "get": {
+                "description": "Retrieve a list of all identifications in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "identifications"
+                ],
+                "summary": "List all identifications",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Identification"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new identification to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "identifications"
+                ],
+                "summary": "Create a new identification",
+                "parameters": [
+                    {
+                        "description": "Identification data",
+                        "name": "identification",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateIdentificationDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Identification"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/identifications/{id}": {
+            "get": {
+                "description": "Retrieve a single identification by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "identifications"
+                ],
+                "summary": "Get a identification by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Identification ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Identification"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing identification",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "identifications"
+                ],
+                "summary": "Update a identification",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Identification ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated identification data",
+                        "name": "identification",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateIdentificationDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Identification"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a identification by its ID",
+                "tags": [
+                    "identifications"
+                ],
+                "summary": "Delete a identification",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Identification ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/laboratories": {
+            "get": {
+                "description": "Retrieve a list of all laboratories in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "laboratories"
+                ],
+                "summary": "List all laboratories",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Laboratory"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new laboratory to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "laboratories"
+                ],
+                "summary": "Create a new laboratory",
+                "parameters": [
+                    {
+                        "description": "Laboratory data",
+                        "name": "laboratory",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateLaboratoryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Laboratory"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/laboratories/{id}": {
+            "get": {
+                "description": "Retrieve a single laboratory by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "laboratories"
+                ],
+                "summary": "Get a laboratory by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Laboratory ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Laboratory"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing laboratory",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "laboratories"
+                ],
+                "summary": "Update a laboratory",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Laboratory ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated laboratory data",
+                        "name": "laboratory",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateLaboratoryDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Laboratory"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a laboratory by its ID",
+                "tags": [
+                    "laboratories"
+                ],
+                "summary": "Delete a laboratory",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Laboratory ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/medical_records": {
+            "get": {
+                "description": "Retrieve a list of all medical_records in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "List all medical_records",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.MedicalRecord"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new medical_record to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Create a new medical_record",
+                "parameters": [
+                    {
+                        "description": "MedicalRecord data",
+                        "name": "medical_record",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateMedicalRecordDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.MedicalRecord"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/medical_records/{id}": {
+            "get": {
+                "description": "Retrieve a single medical_record by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Get a medical_record by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MedicalRecord ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MedicalRecord"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing medical_record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Update a medical_record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MedicalRecord ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated medical_record data",
+                        "name": "medical_record",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateMedicalRecordDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MedicalRecord"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a medical_record by its ID",
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Delete a medical_record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "MedicalRecord ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/patients": {
+            "get": {
+                "description": "Retrieve a list of all patients in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "patients"
+                ],
+                "summary": "List all patients",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Patient"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new patient to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "patients"
+                ],
+                "summary": "Create a new patient",
+                "parameters": [
+                    {
+                        "description": "Patient data",
+                        "name": "patient",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreatePatientDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Patient"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/patients/{id}": {
+            "get": {
+                "description": "Retrieve a single patient by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "patients"
+                ],
+                "summary": "Get a patient by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Patient ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Patient"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing patient",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "patients"
+                ],
+                "summary": "Update a patient",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Patient ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated patient data",
+                        "name": "patient",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreatePatientDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Patient"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a patient by its ID",
+                "tags": [
+                    "patients"
+                ],
+                "summary": "Delete a patient",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Patient ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/roles": {
             "get": {
                 "description": "Retrieve a list of all roles in the system",
@@ -56,7 +1946,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateRoleDTO"
+                            "$ref": "#/definitions/request.CreateRoleDTO"
                         }
                     }
                 ],
@@ -142,7 +2032,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dto.CreateRoleDTO"
+                            "$ref": "#/definitions/request.CreateRoleDTO"
                         }
                     }
                 ],
@@ -203,10 +2093,1027 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/treatments_prescriptions": {
+            "get": {
+                "description": "Retrieve a list of all treatments_prescriptions in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "treatments_prescriptions"
+                ],
+                "summary": "List all treatments_prescriptions",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.TreatmentPrescription"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new treatment_prescription to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "treatments_prescriptions"
+                ],
+                "summary": "Create a new treatment_prescription",
+                "parameters": [
+                    {
+                        "description": "TreatmentPrescription data",
+                        "name": "treatment_prescription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateTreatmentPrescriptionDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.TreatmentPrescription"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/treatments_prescriptions/{id}": {
+            "get": {
+                "description": "Retrieve a single treatment_prescription by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "treatments_prescriptions"
+                ],
+                "summary": "Get a treatment_prescription by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "TreatmentPrescription ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TreatmentPrescription"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing treatment_prescription",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "treatments_prescriptions"
+                ],
+                "summary": "Update a treatment_prescription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "TreatmentPrescription ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated treatment_prescription data",
+                        "name": "treatment_prescription",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateTreatmentPrescriptionDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TreatmentPrescription"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a treatment_prescription by its ID",
+                "tags": [
+                    "treatments_prescriptions"
+                ],
+                "summary": "Delete a treatment_prescription",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "TreatmentPrescription ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "description": "Retrieve a list of all users in the system",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "List all users",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.User"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new user to the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create a new user",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateUserDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/users/{id}": {
+            "get": {
+                "description": "Retrieve a single user by its ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get a user by ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated user data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateUserDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Remove a user by its ID",
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
-        "dto.CreateRoleDTO": {
+        "models.ClinicalNote": {
+            "type": "object",
+            "properties": {
+                "consultationVisit": {
+                    "$ref": "#/definitions/models.ConsultationVisit"
+                },
+                "id_consulta": {
+                    "type": "integer"
+                },
+                "notas_progreso": {
+                    "type": "string"
+                },
+                "observaciones_recomendaciones": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ConsentAuthorization": {
+            "type": "object",
+            "properties": {
+                "detalles": {
+                    "type": "string"
+                },
+                "fecha_consentimiento": {
+                    "type": "string"
+                },
+                "id_paciente": {
+                    "type": "integer"
+                },
+                "patient": {
+                    "$ref": "#/definitions/models.Patient"
+                },
+                "ruta_archivo_externo": {
+                    "type": "string"
+                },
+                "tipo_consentimiento": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.ConsultationVisit": {
+            "type": "object",
+            "properties": {
+                "fecha_hora_visita": {
+                    "type": "string"
+                },
+                "hospitalEmployee": {
+                    "$ref": "#/definitions/models.HospitalEmployee"
+                },
+                "id_paciente": {
+                    "type": "integer"
+                },
+                "id_personal_hospital": {
+                    "type": "integer"
+                },
+                "notas_medicas": {
+                    "type": "string"
+                },
+                "patient": {
+                    "$ref": "#/definitions/models.Patient"
+                },
+                "razon_visita": {
+                    "type": "string"
+                },
+                "resultados_examenes": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.DemographicData": {
+            "type": "object",
+            "properties": {
+                "estado_civil": {
+                    "type": "string"
+                },
+                "informacion_etnica_racial": {
+                    "type": "string"
+                },
+                "informacion_laboral": {
+                    "type": "string"
+                },
+                "nacionalidad": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.DiagnosticImage": {
+            "type": "object",
+            "properties": {
+                "consultationVisit": {
+                    "$ref": "#/definitions/models.ConsultationVisit"
+                },
+                "descripcion": {
+                    "type": "string"
+                },
+                "fecha_imagen": {
+                    "type": "string"
+                },
+                "id_consulta": {
+                    "type": "integer"
+                },
+                "interpretacion_imagen": {
+                    "type": "string"
+                },
+                "ruta_archivo_externo": {
+                    "type": "string"
+                },
+                "tipo_imagen": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.HospitalEmployee": {
+            "type": "object",
+            "properties": {
+                "direccion": {
+                    "type": "string"
+                },
+                "fecha_nacimiento": {
+                    "type": "string"
+                },
+                "genero": {
+                    "type": "string"
+                },
+                "id_identificacion": {
+                    "type": "integer"
+                },
+                "id_rol": {
+                    "description": "Llave foránea que referencia la tabla roles",
+                    "type": "integer"
+                },
+                "identification": {
+                    "$ref": "#/definitions/models.Identification"
+                },
+                "nombre_completo": {
+                    "type": "string"
+                },
+                "role": {
+                    "description": "Carga la información del rol relacionado",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Role"
+                        }
+                    ]
+                },
+                "telefono": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Identification": {
+            "type": "object",
+            "properties": {
+                "numero_documento": {
+                    "type": "string"
+                },
+                "tipo_documento": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Laboratory": {
+            "type": "object",
+            "properties": {
+                "consultationVisit": {
+                    "$ref": "#/definitions/models.ConsultationVisit"
+                },
+                "fecha_prueba": {
+                    "type": "string"
+                },
+                "id_consulta": {
+                    "type": "integer"
+                },
+                "resultados_prueba": {
+                    "type": "string"
+                },
+                "ruta_archivo_externo": {
+                    "type": "string"
+                },
+                "tipo_prueba": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MedicalRecord": {
+            "type": "object",
+            "properties": {
+                "alergias": {
+                    "type": "string"
+                },
+                "antecedentes_familiares": {
+                    "type": "string"
+                },
+                "diagnosticos_previos": {
+                    "type": "string"
+                },
+                "enfermedades_cronicas": {
+                    "type": "string"
+                },
+                "fecha_actualizacion_historial": {
+                    "type": "string"
+                },
+                "fecha_creacion_historial": {
+                    "type": "string"
+                },
+                "historial_cirugias": {
+                    "type": "string"
+                },
+                "id_paciente": {
+                    "description": "Llave foránea que referencia la tabla roles",
+                    "type": "integer"
+                },
+                "medicamentos_actuales": {
+                    "type": "string"
+                },
+                "patient": {
+                    "$ref": "#/definitions/models.Patient"
+                }
+            }
+        },
+        "models.Patient": {
+            "type": "object",
+            "properties": {
+                "demographicData": {
+                    "$ref": "#/definitions/models.DemographicData"
+                },
+                "direccion": {
+                    "type": "string"
+                },
+                "fecha_nacimiento": {
+                    "type": "string"
+                },
+                "genero": {
+                    "type": "string"
+                },
+                "id_datos_demograficos": {
+                    "type": "integer"
+                },
+                "id_identificacion": {
+                    "type": "integer"
+                },
+                "id_rol": {
+                    "description": "Llave foránea que referencia la tabla roles",
+                    "type": "integer"
+                },
+                "id_usuarios": {
+                    "type": "integer"
+                },
+                "identification": {
+                    "$ref": "#/definitions/models.Identification"
+                },
+                "nombre_completo": {
+                    "type": "string"
+                },
+                "numero_seguro_social": {
+                    "type": "string"
+                },
+                "role": {
+                    "description": "Carga la información del rol relacionado",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Role"
+                        }
+                    ]
+                },
+                "telefono": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/models.User"
+                }
+            }
+        },
+        "models.Role": {
+            "type": "object",
+            "properties": {
+                "descripcion": {
+                    "type": "string"
+                },
+                "nombre_rol": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TreatmentPrescription": {
+            "type": "object",
+            "properties": {
+                "dosis": {
+                    "type": "string"
+                },
+                "duracion_tratamiento": {
+                    "type": "string"
+                },
+                "frecuencia": {
+                    "type": "string"
+                },
+                "id_paciente": {
+                    "type": "integer"
+                },
+                "instrucciones": {
+                    "type": "string"
+                },
+                "medicamento_prescrito": {
+                    "type": "string"
+                },
+                "patient": {
+                    "$ref": "#/definitions/models.Patient"
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "contraseña": {
+                    "type": "string"
+                },
+                "id_rol": {
+                    "description": "Llave foránea que referencia la tabla roles",
+                    "type": "integer"
+                },
+                "nombre_usuario": {
+                    "type": "string"
+                },
+                "role": {
+                    "description": "Carga la información del rol relacionado",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/models.Role"
+                        }
+                    ]
+                }
+            }
+        },
+        "request.CreateClinicalNoteDTO": {
+            "type": "object",
+            "required": [
+                "id_consulta",
+                "notas_progreso",
+                "observaciones_recomendaciones"
+            ],
+            "properties": {
+                "id_consulta": {
+                    "type": "integer"
+                },
+                "notas_progreso": {
+                    "type": "string"
+                },
+                "observaciones_recomendaciones": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateConsentAuthorizationDTO": {
+            "type": "object",
+            "required": [
+                "detalles",
+                "fecha_consentimiento",
+                "id_paciente",
+                "ruta_archivo_externo",
+                "tipo_consentimiento"
+            ],
+            "properties": {
+                "detalles": {
+                    "type": "string"
+                },
+                "fecha_consentimiento": {
+                    "type": "string",
+                    "example": "2025-01-20"
+                },
+                "id_paciente": {
+                    "type": "integer"
+                },
+                "ruta_archivo_externo": {
+                    "type": "string"
+                },
+                "tipo_consentimiento": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateConsultationVisitDTO": {
+            "type": "object",
+            "required": [
+                "fecha_hora_visita",
+                "id_paciente",
+                "id_personal_hospital",
+                "notas_medicas",
+                "razon_visita",
+                "resultados_examenes"
+            ],
+            "properties": {
+                "fecha_hora_visita": {
+                    "type": "string"
+                },
+                "id_paciente": {
+                    "type": "integer"
+                },
+                "id_personal_hospital": {
+                    "type": "integer"
+                },
+                "notas_medicas": {
+                    "type": "string"
+                },
+                "razon_visita": {
+                    "type": "string"
+                },
+                "resultados_examenes": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateDemographicDataDTO": {
+            "type": "object",
+            "required": [
+                "estado_civil",
+                "informacion_etnica_racial",
+                "informacion_laboral",
+                "nacionalidad"
+            ],
+            "properties": {
+                "estado_civil": {
+                    "type": "string"
+                },
+                "informacion_etnica_racial": {
+                    "type": "string"
+                },
+                "informacion_laboral": {
+                    "type": "string"
+                },
+                "nacionalidad": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateDiagnosticImageDTO": {
+            "type": "object",
+            "required": [
+                "descripcion",
+                "fecha_imagen",
+                "id_consulta",
+                "interpretacion_imagen",
+                "ruta_archivo_externo",
+                "tipo_imagen"
+            ],
+            "properties": {
+                "descripcion": {
+                    "type": "string"
+                },
+                "fecha_imagen": {
+                    "type": "string",
+                    "example": "2025-01-20"
+                },
+                "id_consulta": {
+                    "type": "integer"
+                },
+                "interpretacion_imagen": {
+                    "type": "string"
+                },
+                "ruta_archivo_externo": {
+                    "type": "string"
+                },
+                "tipo_imagen": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateHospitalEmployeeDTO": {
+            "type": "object",
+            "required": [
+                "direccion",
+                "fecha_nacimiento",
+                "genero",
+                "id_identificacion",
+                "id_rol",
+                "nombre_completo",
+                "telefono"
+            ],
+            "properties": {
+                "direccion": {
+                    "type": "string"
+                },
+                "fecha_nacimiento": {
+                    "type": "string",
+                    "example": "2025-01-20"
+                },
+                "genero": {
+                    "type": "string"
+                },
+                "id_identificacion": {
+                    "type": "integer"
+                },
+                "id_rol": {
+                    "description": "ID del rol asociado, requerido",
+                    "type": "integer"
+                },
+                "nombre_completo": {
+                    "type": "string"
+                },
+                "telefono": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateIdentificationDTO": {
+            "type": "object",
+            "required": [
+                "numero_documento",
+                "tipo_documento"
+            ],
+            "properties": {
+                "numero_documento": {
+                    "type": "string"
+                },
+                "tipo_documento": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateLaboratoryDTO": {
+            "type": "object",
+            "required": [
+                "fecha_prueba",
+                "id_consulta",
+                "resultados_prueba",
+                "ruta_archivo_externo",
+                "tipo_prueba"
+            ],
+            "properties": {
+                "fecha_prueba": {
+                    "type": "string",
+                    "example": "2025-01-20"
+                },
+                "id_consulta": {
+                    "type": "integer"
+                },
+                "resultados_prueba": {
+                    "type": "string"
+                },
+                "ruta_archivo_externo": {
+                    "type": "string"
+                },
+                "tipo_prueba": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateMedicalRecordDTO": {
+            "type": "object",
+            "required": [
+                "alergias",
+                "antecedentes_familiares",
+                "diagnosticos_previos",
+                "enfermedades_cronicas",
+                "fecha_actualizacion_historial",
+                "fecha_creacion_historial",
+                "historial_cirugias",
+                "id_paciente",
+                "medicamentos_actuales"
+            ],
+            "properties": {
+                "alergias": {
+                    "type": "string"
+                },
+                "antecedentes_familiares": {
+                    "type": "string"
+                },
+                "diagnosticos_previos": {
+                    "type": "string"
+                },
+                "enfermedades_cronicas": {
+                    "type": "string"
+                },
+                "fecha_actualizacion_historial": {
+                    "type": "string"
+                },
+                "fecha_creacion_historial": {
+                    "type": "string"
+                },
+                "historial_cirugias": {
+                    "type": "string"
+                },
+                "id_paciente": {
+                    "description": "ID del rol asociado, requerido",
+                    "type": "integer"
+                },
+                "medicamentos_actuales": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreatePatientDTO": {
+            "type": "object",
+            "required": [
+                "direccion",
+                "fecha_nacimiento",
+                "genero",
+                "id_datos_demograficos",
+                "id_identificacion",
+                "id_rol",
+                "id_usuarios",
+                "nombre_completo",
+                "numero_seguro_social",
+                "telefono"
+            ],
+            "properties": {
+                "direccion": {
+                    "type": "string"
+                },
+                "fecha_nacimiento": {
+                    "type": "string",
+                    "example": "2025-01-20"
+                },
+                "genero": {
+                    "type": "string"
+                },
+                "id_datos_demograficos": {
+                    "type": "integer"
+                },
+                "id_identificacion": {
+                    "type": "integer"
+                },
+                "id_rol": {
+                    "description": "ID del rol asociado, requerido",
+                    "type": "integer"
+                },
+                "id_usuarios": {
+                    "type": "integer"
+                },
+                "nombre_completo": {
+                    "type": "string"
+                },
+                "numero_seguro_social": {
+                    "type": "string"
+                },
+                "telefono": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateRoleDTO": {
             "type": "object",
             "required": [
                 "descripcion",
@@ -221,13 +3128,54 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Role": {
+        "request.CreateTreatmentPrescriptionDTO": {
             "type": "object",
+            "required": [
+                "dosis",
+                "duracion_tratamiento",
+                "frecuencia",
+                "id_paciente",
+                "instrucciones",
+                "medicamento_prescrito"
+            ],
             "properties": {
-                "descripcion": {
+                "dosis": {
                     "type": "string"
                 },
-                "nombre_rol": {
+                "duracion_tratamiento": {
+                    "type": "string"
+                },
+                "frecuencia": {
+                    "type": "string"
+                },
+                "id_paciente": {
+                    "type": "integer"
+                },
+                "instrucciones": {
+                    "type": "string"
+                },
+                "medicamento_prescrito": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateUserDTO": {
+            "type": "object",
+            "required": [
+                "contraseña",
+                "id_rol",
+                "nombre_usuario"
+            ],
+            "properties": {
+                "contraseña": {
+                    "type": "string",
+                    "minLength": 8
+                },
+                "id_rol": {
+                    "description": "ID del rol asociado, requerido",
+                    "type": "integer"
+                },
+                "nombre_usuario": {
                     "type": "string"
                 }
             }
