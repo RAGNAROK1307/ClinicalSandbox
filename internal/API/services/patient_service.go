@@ -3,6 +3,7 @@ package services
 import (
 	"ClinicalSandBox/configs/db"
 	"ClinicalSandBox/internal/API/dto/request"
+	"ClinicalSandBox/internal/API/dto/response"
 	"ClinicalSandBox/internal/API/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -55,7 +56,23 @@ func CreatePatient(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"patient": patient})
+	//var role models.Role
+	//db.DB.First(&role, patient.IDRole)
+
+	// Generar la respuesta con UserResponseDTO
+	patientResponse := response.PatientResponseDTO{
+		IDPatient:            patient.IDPatient,
+		FullName:             patient.FullName,
+		BirthDate:            patient.BirthDate,
+		Gender:               patient.Gender,
+		Address:              patient.Address,
+		Phone:                patient.Phone,
+		SocialSecurityNumber: patient.SocialSecurityNumber,
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"user": patientResponse})
+
+	//c.JSON(http.StatusCreated, gin.H{"patient": patient})
 }
 
 // GetPatients godoc
@@ -68,7 +85,30 @@ func CreatePatient(c *gin.Context) {
 func GetPatients(c *gin.Context) {
 	var patients []models.Patient
 	db.DB.Preload("Role").Preload("Identification").Preload("DemographicData").Preload("User").Find(&patients)
-	c.JSON(http.StatusOK, gin.H{"patients": patients})
+
+	var patientsResponse []response.PatientResponseDTO
+	for _, patient := range patients {
+		patientsResponse = append(patientsResponse, response.PatientResponseDTO{
+			IDPatient:               patient.IDPatient,
+			FullName:                patient.FullName,
+			BirthDate:               patient.BirthDate,
+			Gender:                  patient.Gender,
+			Address:                 patient.Address,
+			Phone:                   patient.Phone,
+			SocialSecurityNumber:    patient.SocialSecurityNumber,
+			RoleName:                patient.Role.RoleName,
+			UserName:                patient.User.UserName,
+			DocumentType:            patient.Identification.DocumentType,
+			DocumentNumber:          patient.Identification.DocumentNumber,
+			RacialEthnicInformation: patient.DemographicData.RacialEthnicInformation,
+			MaritalStatus:           patient.DemographicData.MaritalStatus,
+			Nationality:             patient.DemographicData.Nationality,
+			EmploymentInformation:   patient.DemographicData.EmploymentInformation,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"users": patientsResponse})
+	//c.JSON(http.StatusOK, gin.H{"patients": patients})
 }
 
 // GetPatient godoc
@@ -87,7 +127,27 @@ func GetPatient(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Patient not found"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"patient": patient})
+
+	patientResponse := response.PatientResponseDTO{
+		IDPatient:               patient.IDPatient,
+		FullName:                patient.FullName,
+		BirthDate:               patient.BirthDate,
+		Gender:                  patient.Gender,
+		Address:                 patient.Address,
+		Phone:                   patient.Phone,
+		SocialSecurityNumber:    patient.SocialSecurityNumber,
+		RoleName:                patient.Role.RoleName,
+		UserName:                patient.User.UserName,
+		DocumentType:            patient.Identification.DocumentType,
+		DocumentNumber:          patient.Identification.DocumentNumber,
+		RacialEthnicInformation: patient.DemographicData.RacialEthnicInformation,
+		MaritalStatus:           patient.DemographicData.MaritalStatus,
+		Nationality:             patient.DemographicData.Nationality,
+		EmploymentInformation:   patient.DemographicData.EmploymentInformation,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": patientResponse})
+	//c.JSON(http.StatusOK, gin.H{"patient": patient})
 }
 
 // UpdatePatient godoc
@@ -144,7 +204,18 @@ func UpdatePatient(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"patient": existingPatient})
+	patientResponse := response.PatientResponseDTO{
+		IDPatient:            existingPatient.IDPatient,
+		FullName:             existingPatient.FullName,
+		BirthDate:            existingPatient.BirthDate,
+		Gender:               existingPatient.Gender,
+		Address:              existingPatient.Address,
+		Phone:                existingPatient.Phone,
+		SocialSecurityNumber: existingPatient.SocialSecurityNumber,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": patientResponse})
+	//c.JSON(http.StatusOK, gin.H{"patient": existingPatient})
 }
 
 // DeletePatient godoc

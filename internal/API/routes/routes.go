@@ -1,20 +1,26 @@
-package routes
+/*package routes
 
 import (
 	_ "ClinicalSandBox/docs"
 	services2 "ClinicalSandBox/internal/API/services"
-	"ClinicalSandBox/internal/auth/routes"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"log"
-	"net/http"
-	"path/filepath"
+	"time"
 )
 
 // Routes configura las rutas de la API
 func Routes() {
 	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // Reemplaza con la URL de tu frontend si cambia http://127.0.0.1:5500
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
 
 	// Swagger Route
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
@@ -97,24 +103,111 @@ func Routes() {
 	r.PUT("/consent_authorizations/:id", services2.UpdateConsentAuthorization)
 	r.DELETE("/consent_authorizations/:id", services2.DeleteConsentAuthorization)
 
+	// En tu archivo de rutas
+	r.POST("/user-and-patients", services2.CreateUserAndPatient)
+	r.GET("/user-and-patients", services2.GetUserAndPatients)
+	r.GET("/user-and-patients/:id", services2.GetUserAndPatient)
+	r.PUT("/user-and-patients/:id", services2.UpdateUserAndPatient)
+	r.DELETE("/user-and-patients/:id", services2.DeleteUserAndPatient)
+
+	r.POST("/doctor-and-user", services2.CreateDoctorAndUser)
+	r.GET("/doctors-and-users", services2.GetDoctorsAndUsers)
+	r.GET("/doctors-and-users/:id", services2.GetDoctorAndUserByID)
+	r.PUT("/doctors-and-users/:id", services2.UpdateDoctorAndUser)
+	r.DELETE("/doctors-and-users/:id", services2.DeleteDoctorAndUser)
+
+	r.POST("/executive-and-user", services2.CreateExecutiveAndUser)
+	r.GET("/executives-and-users", services2.GetExecutivesAndUsers)
+	r.GET("/executives-and-users/:id", services2.GetExecutiveAndUserByID)
+	r.PUT("/executives-and-users/:id", services2.UpdateExecutiveAndUser)
+	r.DELETE("/executives-and-users/:id", services2.DeleteExecutiveAndUser)
+
 	r.Run(":8080")
-}
+}*/
 
-func SetupRoutes() {
-	// Usa la ruta correcta para los archivos estáticos
-	staticDir := filepath.Join("C:", "public", "web")
+package routes
 
-	// Verifica si la ruta es correcta
-	absPath, err := filepath.Abs(staticDir)
-	if err != nil {
-		log.Fatalf("Error al obtener la ruta: %v", err)
+import (
+	_ "ClinicalSandBox/docs"
+	services2 "ClinicalSandBox/internal/API/services"
+	authMiddleware "ClinicalSandBox/internal/auth/middleware"
+	authServices "ClinicalSandBox/internal/auth/services"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	"time"
+)
+
+func Routes() {
+
+	r := gin.Default()
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"*"}, // Reemplaza con la URL de tu frontend si cambia http://127.0.0.1:5500
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
+	// Swagger Route
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+	//r.POST("/users", services2.CreateUser)
+	//r.GET("/users", services2.GetUsers)
+	//r.GET("/users/:id", services2.GetUser)
+	//r.PUT("/users/:id", services2.UpdateUser)
+	//r.DELETE("/users/:id", services2.DeleteUser)
+
+	// Login Route
+	r.POST("/login", authServices.Login)
+
+	// Rutas protegidas con autenticación
+	auth := r.Group("/")
+	auth.Use(authMiddleware.AuthMiddleware())
+
+	{
+		auth.POST("/roles", services2.CreateRole)
+		auth.GET("/roles", services2.GetRoles)
+		auth.GET("/roles/:id", services2.GetRole)
+		auth.PUT("/roles/:id", services2.UpdateRole)
+		auth.DELETE("/roles/:id", services2.DeleteRole)
+
+		// Rutas protegidas con roles específicos
+		admin := auth.Group("/")
+		admin.Use(authMiddleware.RoleMiddleware(10)) // Supongamos que el rol 1 es el de administrador
+		{
+			admin.GET("/patients", services2.GetPatients)
+
+			admin.POST("/users", services2.CreateUser)
+			admin.GET("/users", services2.GetUsers)
+			admin.GET("/users/:id", services2.GetUser)
+			admin.PUT("/users/:id", services2.UpdateUser)
+			admin.DELETE("/users/:id", services2.DeleteUser)
+
+			admin.POST("/user-and-patients", services2.CreateUserAndPatient)
+			admin.GET("/user-and-patients", services2.GetUserAndPatients)
+			admin.GET("/user-and-patients/:id", services2.GetUserAndPatient)
+			admin.PUT("/user-and-patients/:id", services2.UpdateUserAndPatient)
+			admin.DELETE("/user-and-patients/:id", services2.DeleteUserAndPatient)
+
+			admin.POST("/doctor-and-user", services2.CreateDoctorAndUser)
+			admin.GET("/doctors-and-users", services2.GetDoctorsAndUsers)
+			admin.GET("/doctors-and-users/:id", services2.GetDoctorAndUserByID)
+			admin.PUT("/doctors-and-users/:id", services2.UpdateDoctorAndUser)
+			admin.DELETE("/doctors-and-users/:id", services2.DeleteDoctorAndUser)
+
+			admin.POST("/executive-and-user", services2.CreateExecutiveAndUser)
+			admin.GET("/executives-and-users", services2.GetExecutivesAndUsers)
+			admin.GET("/executives-and-users/:id", services2.GetExecutiveAndUserByID)
+			admin.PUT("/executives-and-users/:id", services2.UpdateExecutiveAndUser)
+			admin.DELETE("/executives-and-users/:id", services2.DeleteExecutiveAndUser)
+
+		}
+
+		// Otras rutas protegidas...
 	}
-	log.Println("Ruta absoluta a archivos estáticos:", absPath)
 
-	// Sirve los archivos estáticos desde public/web
-	http.Handle("/", http.StripPrefix("/", http.FileServer(http.Dir(absPath))))
-
-	// Configura el manejador para la ruta de login
-	http.HandleFunc("/login", routes.LoginHandler)
-
+	r.Run(":8080")
 }
