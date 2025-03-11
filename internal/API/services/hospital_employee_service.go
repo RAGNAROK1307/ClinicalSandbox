@@ -3,6 +3,7 @@ package services
 import (
 	"ClinicalSandBox/configs/db"
 	"ClinicalSandBox/internal/API/dto/request"
+	"ClinicalSandBox/internal/API/dto/response"
 	"ClinicalSandBox/internal/API/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -39,6 +40,7 @@ func CreateHospitalEmployee(c *gin.Context) {
 	hospital_employee := models.HospitalEmployee{
 		IDRole:           hospital_employeeDTO.IDRole,
 		IDIdentification: hospital_employeeDTO.IDIdentification,
+		IDUser:           hospital_employeeDTO.IDUser,
 		FullName:         hospital_employeeDTO.FullName,
 		BirthDate:        birthDate, // Aquí estamos usando la variable birthDate
 		Gender:           hospital_employeeDTO.Gender,
@@ -52,7 +54,19 @@ func CreateHospitalEmployee(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"hospital_employee": hospital_employee})
+	hospitalEmployeeResponse := response.HospitalEmployeeResponseDTO{
+		IDHospitalEmployee: hospital_employee.IDHospitalEmployee,
+		UserName:           hospital_employee.User.UserName,
+		RoleName:           hospital_employee.Role.RoleName,
+		FullName:           hospital_employee.FullName,
+		BirthDate:          hospital_employee.BirthDate,
+		Gender:             hospital_employee.Gender,
+		Address:            hospital_employee.Address,
+		Phone:              hospital_employee.Phone,
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"user": hospitalEmployeeResponse})
+	//c.JSON(http.StatusCreated, gin.H{"hospital_employee": hospital_employee})
 }
 
 // GetHospitalEmployees godoc
@@ -64,8 +78,28 @@ func CreateHospitalEmployee(c *gin.Context) {
 // @Router /hospital_employees [get]
 func GetHospitalEmployees(c *gin.Context) {
 	var hospital_employees []models.HospitalEmployee
-	db.DB.Preload("Role").Preload("Identification").Find(&hospital_employees)
-	c.JSON(http.StatusOK, gin.H{"hospital_employees": hospital_employees})
+
+	if err := db.DB.Preload("Role").Preload("Identification").Preload("User").Find(&hospital_employees).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
+		return
+	}
+
+	var hospitalEmployeesResponse []response.HospitalEmployeeResponseDTO
+	for _, hospital_employee := range hospital_employees {
+		hospitalEmployeesResponse = append(hospitalEmployeesResponse, response.HospitalEmployeeResponseDTO{
+			IDHospitalEmployee: hospital_employee.IDHospitalEmployee,
+			UserName:           hospital_employee.User.UserName,
+			RoleName:           hospital_employee.Role.RoleName,
+			FullName:           hospital_employee.FullName,
+			BirthDate:          hospital_employee.BirthDate,
+			Gender:             hospital_employee.Gender,
+			Address:            hospital_employee.Address,
+			Phone:              hospital_employee.Phone,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"hospital_employees": hospitalEmployeesResponse})
+	//c.JSON(http.StatusOK, gin.H{"hospital_employees": hospital_employees})
 }
 
 // GetHospitalEmployee godoc
@@ -80,11 +114,24 @@ func GetHospitalEmployees(c *gin.Context) {
 func GetHospitalEmployee(c *gin.Context) {
 	id := c.Param("id")
 	var hospital_employee models.HospitalEmployee
-	if err := db.DB.Preload("Role").Preload("Identification").First(&hospital_employee, id).Error; err != nil {
+	if err := db.DB.Preload("Role").Preload("Identification").Preload("User").First(&hospital_employee, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "HospitalEmployee not found"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"hospital_employee": hospital_employee})
+
+	hospitalEmployeeResponse := response.HospitalEmployeeResponseDTO{
+		IDHospitalEmployee: hospital_employee.IDHospitalEmployee,
+		UserName:           hospital_employee.User.UserName,
+		RoleName:           hospital_employee.Role.RoleName,
+		FullName:           hospital_employee.FullName,
+		BirthDate:          hospital_employee.BirthDate,
+		Gender:             hospital_employee.Gender,
+		Address:            hospital_employee.Address,
+		Phone:              hospital_employee.Phone,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"hospital_employee": hospitalEmployeeResponse})
+	//c.JSON(http.StatusOK, gin.H{"hospital_employee": hospital_employee})
 }
 
 // UpdateHospitalEmployee godoc
@@ -126,6 +173,7 @@ func UpdateHospitalEmployee(c *gin.Context) {
 	// Actualizar solo los campos permitidos
 	existingHospitalEmployee.IDRole = hospital_employeeDTO.IDRole
 	existingHospitalEmployee.IDIdentification = hospital_employeeDTO.IDIdentification
+	existingHospitalEmployee.IDUser = hospital_employeeDTO.IDUser
 	existingHospitalEmployee.FullName = hospital_employeeDTO.FullName
 	existingHospitalEmployee.BirthDate = birthDate // Usar la fecha convertida
 	existingHospitalEmployee.Gender = hospital_employeeDTO.Gender
@@ -138,7 +186,20 @@ func UpdateHospitalEmployee(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"hospital_employee": existingHospitalEmployee})
+	hospitalEmployeeResponse := response.HospitalEmployeeResponseDTO{
+		IDHospitalEmployee: existingHospitalEmployee.IDHospitalEmployee,
+		UserName:           existingHospitalEmployee.User.UserName,
+		RoleName:           existingHospitalEmployee.Role.RoleName,
+		FullName:           existingHospitalEmployee.FullName,
+		BirthDate:          existingHospitalEmployee.BirthDate,
+		Gender:             existingHospitalEmployee.Gender,
+		Address:            existingHospitalEmployee.Address,
+		Phone:              existingHospitalEmployee.Phone,
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"user": hospitalEmployeeResponse})
+
+	//c.JSON(http.StatusOK, gin.H{"hospital_employee": existingHospitalEmployee})
 }
 
 // DeleteHospitalEmployee godoc

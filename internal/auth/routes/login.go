@@ -1,12 +1,12 @@
 package routes
 
 import (
-	"ClinicalSandBox/internal/auth/services"
-	"encoding/json"
-	"net/http"
+// "ClinicalSandBox/internal/auth/services"
+// "encoding/json"
+// "net/http"
 )
 
-type Credentials struct {
+/*type Credentials struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
@@ -24,4 +24,4 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	} else {
 		http.Error(w, "Unauthorized", http.StatusUnauthorized)
 	}
-}
+}*/

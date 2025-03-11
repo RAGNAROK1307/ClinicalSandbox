@@ -9,6 +9,10 @@ func main() {
 
 	db.ConnectDB()
 	db.AutoMigrate()
+	db.SeedRoles()
+
+	//authService := services.NewAuthService()
+
 	routes.Routes()
 	//routes.SetupRoutes()
 	//log.Println("Server starting on port 8080...")

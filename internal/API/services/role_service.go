@@ -6,6 +6,8 @@ import (
 	"ClinicalSandBox/internal/API/models"
 	"github.com/gin-gonic/gin" // Para el framework Gin
 	"net/http"
+	"strconv"
+
 	//"gorm.io/gorm"                 // Para trabajar con GORM, si no lo has hecho ya
 	_ "net/http" // Para constantes HTTP como http.StatusNotFound, etc.
 )
@@ -98,6 +100,19 @@ func UpdateRole(c *gin.Context) {
 		return
 	}
 
+	// Convertir ID a uint para compararlo con los valores protegidos
+	roleID, err := strconv.ParseUint(id, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role ID"})
+		return
+	}
+
+	// Verificar si el rol es inmutable
+	if roleID == uint64(db.AdminID) || roleID == uint64(db.MedicoID) || roleID == uint64(db.DirectivoID) || roleID == uint64(db.PacienteID) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "This role cannot be modified"})
+		return
+	}
+
 	// Bind JSON al DTO para validar los datos
 	var roleDTO request.CreateRoleDTO
 	if err := c.ShouldBindJSON(&roleDTO); err != nil {
@@ -128,9 +143,25 @@ func UpdateRole(c *gin.Context) {
 // @Router /roles/{id} [delete]
 func DeleteRole(c *gin.Context) {
 	id := c.Param("id")
-	if err := db.DB.Delete(&models.Role{}, id).Error; err != nil {
-		c.JSON(404, gin.H{"error": "Role not found"})
+
+	// Convertir ID a uint
+	roleID, err := strconv.ParseUint(id, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid role ID"})
 		return
 	}
-	c.JSON(204, nil)
+
+	// Verificar si el rol es inmutable
+	if roleID == uint64(db.AdminID) || roleID == uint64(db.MedicoID) || roleID == uint64(db.DirectivoID) || roleID == uint64(db.PacienteID) {
+		c.JSON(http.StatusForbidden, gin.H{"error": "This role cannot be deleted"})
+		return
+	}
+
+	// Intentar eliminar el rol
+	if err := db.DB.Delete(&models.Role{}, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Role not found"})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
 }

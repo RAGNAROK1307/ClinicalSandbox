@@ -85,6 +85,8 @@ definitions:
       id_rol:
         description: Llave foránea que referencia la tabla roles
         type: integer
+      id_usuarios:
+        type: integer
       identification:
         $ref: '#/definitions/models.Identification'
       nombre_completo:
@@ -95,6 +97,8 @@ definitions:
         description: Carga la información del rol relacionado
       telefono:
         type: string
+      user:
+        $ref: '#/definitions/models.User'
     type: object
   models.Identification:
     properties:
@@ -308,6 +312,40 @@ definitions:
     - ruta_archivo_externo
     - tipo_imagen
     type: object
+  request.CreateHospitalEmployeeAndUserDTO:
+    properties:
+      contraseña:
+        minLength: 8
+        type: string
+      direccion:
+        type: string
+      fecha_nacimiento:
+        example: "2025-01-20"
+        type: string
+      genero:
+        type: string
+      nombre_completo:
+        description: IDRole         uint   `json:"id_rol" binding:"required"`
+        type: string
+      nombre_usuario:
+        type: string
+      numero_documento:
+        type: string
+      telefono:
+        type: string
+      tipo_documento:
+        type: string
+    required:
+    - contraseña
+    - direccion
+    - fecha_nacimiento
+    - genero
+    - nombre_completo
+    - nombre_usuario
+    - numero_documento
+    - telefono
+    - tipo_documento
+    type: object
   request.CreateHospitalEmployeeDTO:
     properties:
       direccion:
@@ -322,6 +360,8 @@ definitions:
       id_rol:
         description: ID del rol asociado, requerido
         type: integer
+      id_usuarios:
+        type: integer
       nombre_completo:
         type: string
       telefono:
@@ -332,6 +372,7 @@ definitions:
     - genero
     - id_identificacion
     - id_rol
+    - id_usuarios
     - nombre_completo
     - telefono
     type: object
@@ -465,6 +506,55 @@ definitions:
     - instrucciones
     - medicamento_prescrito
     type: object
+  request.CreateUserAndPatientDTO:
+    properties:
+      contraseña:
+        minLength: 8
+        type: string
+      direccion:
+        type: string
+      estado_civil:
+        type: string
+      fecha_nacimiento:
+        example: "2025-01-20"
+        type: string
+      genero:
+        type: string
+      informacion_etnica_racial:
+        type: string
+      informacion_laboral:
+        type: string
+      nacionalidad:
+        type: string
+      nombre_completo:
+        description: IDRole                  uint   `json:"id_rol" binding:"required"`
+        type: string
+      nombre_usuario:
+        type: string
+      numero_documento:
+        type: string
+      numero_seguro_social:
+        type: string
+      telefono:
+        type: string
+      tipo_documento:
+        type: string
+    required:
+    - contraseña
+    - direccion
+    - estado_civil
+    - fecha_nacimiento
+    - genero
+    - informacion_etnica_racial
+    - informacion_laboral
+    - nacionalidad
+    - nombre_completo
+    - nombre_usuario
+    - numero_documento
+    - numero_seguro_social
+    - telefono
+    - tipo_documento
+    type: object
   request.CreateUserDTO:
     properties:
       contraseña:
@@ -479,6 +569,179 @@ definitions:
     - contraseña
     - id_rol
     - nombre_usuario
+    type: object
+  request.UpdateHospitalEmployeeAndUserDTO:
+    properties:
+      direccion:
+        type: string
+      fecha_nacimiento:
+        example: "2025-01-20"
+        type: string
+      genero:
+        type: string
+      nombre_completo:
+        description: Password       string `json:"contraseña" binding:"omitempty,min=8"`
+          // No es requerida en PUT
+        type: string
+      nombre_usuario:
+        type: string
+      numero_documento:
+        type: string
+      telefono:
+        type: string
+      tipo_documento:
+        type: string
+    type: object
+  request.UpdateUserAndPatientDTO:
+    properties:
+      direccion:
+        type: string
+      estado_civil:
+        type: string
+      fecha_nacimiento:
+        example: "2025-01-20"
+        type: string
+      genero:
+        type: string
+      informacion_etnica_racial:
+        type: string
+      informacion_laboral:
+        type: string
+      nacionalidad:
+        type: string
+      nombre_completo:
+        description: |-
+          Password                string `json:"contraseña" binding:"required,min=8"`
+          IDRole                  uint   `json:"id_rol" binding:"omitempty"`
+        type: string
+      nombre_usuario:
+        type: string
+      numero_documento:
+        type: string
+      numero_seguro_social:
+        type: string
+      telefono:
+        type: string
+      tipo_documento:
+        type: string
+    type: object
+  response.DemographicDataResponseDTO:
+    properties:
+      estado_civil:
+        type: string
+      id_datos_demograficos:
+        type: integer
+      informacion_etnica_racial:
+        type: string
+      informacion_laboral:
+        type: string
+      nacionalidad:
+        type: string
+    type: object
+  response.HospitalEmployeeAndUserResponseDTO:
+    properties:
+      hospital_employee:
+        $ref: '#/definitions/response.HospitalEmployeeResponseDTO'
+      identification:
+        $ref: '#/definitions/response.IdentificationResponseDTO'
+      user:
+        $ref: '#/definitions/response.UserResponseDTO'
+    type: object
+  response.HospitalEmployeeResponseDTO:
+    properties:
+      direccion:
+        type: string
+      fecha_nacimiento:
+        example: "2025-01-20"
+        type: string
+      genero:
+        type: string
+      id_personal_hospital:
+        description: |-
+          IDRole           uint      `json:"id_rol"` // ID del rol asociado, requerido
+          IDIdentification uint      `json:"id_identificacion"`
+          IDUser           uint      `json:"id_usuarios"`
+        type: integer
+      nombre_completo:
+        type: string
+      nombre_rol:
+        type: string
+      nombre_usuario:
+        type: string
+      telefono:
+        type: string
+    type: object
+  response.IdentificationResponseDTO:
+    properties:
+      id_identificacion:
+        type: integer
+      numero_documento:
+        type: string
+      tipo_documento:
+        type: string
+    type: object
+  response.PatientResponseDTO:
+    properties:
+      direccion:
+        type: string
+      estado_civil:
+        type: string
+      fecha_nacimiento:
+        example: "2025-01-20"
+        type: string
+      genero:
+        type: string
+      id_paciente:
+        description: |-
+          IDRole               uint   `json:"id_rol" binding:"required"` // ID del rol asociado, requerido
+          IDIdentification     uint   `json:"id_identificacion" binding:"required"`
+          IDDemographicData    uint   `json:"id_datos_demograficos" binding:"required"`
+          IDUser               uint   `json:"id_usuarios" binding:"required"`
+        type: integer
+      informacion_etnica_racial:
+        type: string
+      informacion_laboral:
+        type: string
+      nacionalidad:
+        type: string
+      nombre_completo:
+        type: string
+      nombre_rol:
+        type: string
+      nombre_usuario:
+        type: string
+      numero_documento:
+        type: string
+      numero_seguro_social:
+        type: string
+      telefono:
+        type: string
+      tipo_documento:
+        type: string
+    type: object
+  response.UserAndPatientResponseDTO:
+    properties:
+      demographic_data:
+        $ref: '#/definitions/response.DemographicDataResponseDTO'
+      identification:
+        $ref: '#/definitions/response.IdentificationResponseDTO'
+      patient:
+        $ref: '#/definitions/response.PatientResponseDTO'
+      user:
+        $ref: '#/definitions/response.UserResponseDTO'
+    type: object
+  response.UserResponseDTO:
+    properties:
+      contraseña:
+        type: string
+      id_usuario:
+        description: ID del usuario
+        type: integer
+      nombre_rol:
+        type: string
+      nombre_usuario:
+        description: IDRole   uint   `json:"id_rol"`         // ID del rol asociado
+        type: string
     type: object
 info:
   contact: {}
@@ -1108,6 +1371,262 @@ paths:
       summary: Update a diagnostic_image
       tags:
       - diagnostic_images
+  /doctor-and-user:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new doctor and user to the system in a single transaction
+      parameters:
+      - description: Doctor and User data
+        in: body
+        name: doctorAndUser
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateHospitalEmployeeAndUserDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.HospitalEmployeeAndUserResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new doctor and user
+      tags:
+      - doctors
+  /doctors-and-users:
+    get:
+      description: Retrieve a list of all doctors and their associated users in the
+        system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.HospitalEmployeeAndUserResponseDTO'
+            type: array
+      summary: List all doctors and their associated users
+      tags:
+      - doctors
+  /doctors-and-users/{id}:
+    delete:
+      description: Remove a doctor and their associated user by ID
+      parameters:
+      - description: Doctor ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a doctor and user
+      tags:
+      - doctors
+    get:
+      description: Retrieve a single doctor and their associated user by ID
+      parameters:
+      - description: Doctor ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.HospitalEmployeeAndUserResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a doctor and user by ID
+      tags:
+      - doctors
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing doctor and their associated
+        user
+      parameters:
+      - description: Doctor ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated doctor and user data
+        in: body
+        name: doctorAndUser
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateHospitalEmployeeAndUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.HospitalEmployeeAndUserResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a doctor and user
+      tags:
+      - doctors
+  /executive-and-user:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new executive and user to the system in a single transaction
+      parameters:
+      - description: Executive and User data
+        in: body
+        name: executiveAndUser
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateHospitalEmployeeAndUserDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.HospitalEmployeeAndUserResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new executive and user
+      tags:
+      - executives
+  /executives-and-users:
+    get:
+      description: Retrieve a list of all executives and their associated users in
+        the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.HospitalEmployeeAndUserResponseDTO'
+            type: array
+      summary: List all executives and their associated users
+      tags:
+      - executives
+  /executives-and-users/{id}:
+    delete:
+      description: Remove an executive and their associated user by ID
+      parameters:
+      - description: Executive ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete an executive and user
+      tags:
+      - executives
+    get:
+      description: Retrieve a single executive and their associated user by ID
+      parameters:
+      - description: Executive ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.HospitalEmployeeAndUserResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get an executive and user by ID
+      tags:
+      - executives
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing executive and their associated
+        user
+      parameters:
+      - description: Executive ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated executive and user data
+        in: body
+        name: executiveAndUser
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateHospitalEmployeeAndUserDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.HospitalEmployeeAndUserResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update an executive and user
+      tags:
+      - executives
   /hospital_employees:
     get:
       description: Retrieve a list of all hospital_employees in the system
@@ -1983,6 +2502,136 @@ paths:
       summary: Update a treatment_prescription
       tags:
       - treatments_prescriptions
+  /user-and-patients:
+    get:
+      description: Retrieve a list of all users and patients with their demographic
+        data and identification
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.UserAndPatientResponseDTO'
+            type: array
+      summary: List all users and patients
+      tags:
+      - patients
+    post:
+      consumes:
+      - application/json
+      description: Adds a new user, patient, demographic data, and identification
+        to the system in a single transaction
+      parameters:
+      - description: User, Patient, Demographic Data, and Identification
+        in: body
+        name: userAndPatient
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateUserAndPatientDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.UserAndPatientResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new user, patient, demographic data, and identification
+      tags:
+      - patients
+  /user-and-patients/{id}:
+    delete:
+      description: Remove a user and patient with their demographic data and identification
+        by ID
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a user and patient
+      tags:
+      - patients
+    get:
+      description: Retrieve a single user and patient with their demographic data
+        and identification by ID
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserAndPatientResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a user and patient by ID
+      tags:
+      - patients
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing user and patient with their
+        demographic data and identification
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated user and patient data
+        in: body
+        name: userAndPatient
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateUserAndPatientDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.UserAndPatientResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a user and patient
+      tags:
+      - patients
   /users:
     get:
       description: Retrieve a list of all users in the system
@@ -1995,6 +2644,8 @@ paths:
             items:
               $ref: '#/definitions/models.User'
             type: array
+      security:
+      - BearerAuth: []
       summary: List all users
       tags:
       - users

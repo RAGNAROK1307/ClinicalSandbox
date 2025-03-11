@@ -3,7 +3,9 @@ package services
 import (
 	"ClinicalSandBox/configs/db"
 	"ClinicalSandBox/internal/API/dto/request"
+	"ClinicalSandBox/internal/API/dto/response"
 	"ClinicalSandBox/internal/API/models"
+	"ClinicalSandBox/internal/auth/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -27,6 +29,48 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	// Hashear la contraseña
+	hashedPassword, err := services.HashPassword(userDTO.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al procesar la contraseña"})
+		return
+	}
+
+	// Mapea a modelo User con la contraseña hasheada
+	user := models.User{
+		IDRole:   userDTO.IDRole,
+		UserName: userDTO.UserName,
+		Password: hashedPassword,
+	}
+
+	// Guarda el nuevo usuario en la base de datos
+	if err := db.DB.Create(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+		return
+	}
+
+	var role models.Role
+	db.DB.First(&role, user.IDRole)
+
+	// Generar la respuesta con UserResponseDTO
+	userResponse := response.UserResponseDTO{
+		IDUser:   user.IDUser,
+		UserName: user.UserName,
+		RoleName: role.RoleName,
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"user": userResponse})
+}
+
+/*func CreateUser(c *gin.Context) {
+	var userDTO request.CreateUserDTO
+
+	// Bind JSON to userDTO
+	if err := c.ShouldBindJSON(&userDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
 	// Mapea a modelo User
 	user := models.User{
 		IDRole:   userDTO.IDRole,
@@ -40,20 +84,47 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"user": user})
-}
+	var role models.Role
+	db.DB.First(&role, user.IDRole)
+
+	// Generar la respuesta con UserResponseDTO
+	userResponse := response.UserResponseDTO{
+		IDUser:   user.IDUser,
+		UserName: user.UserName,
+		RoleName: role.RoleName,
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"user": userResponse})
+	//c.JSON(http.StatusCreated, gin.H{"user": user})
+}*/
 
 // GetUsers godoc
 // @Summary List all users
 // @Description Retrieve a list of all users in the system
 // @Tags users
+// @Security BearerAuth
 // @Produce json
 // @Success 200 {array} models.User
 // @Router /users [get]
 func GetUsers(c *gin.Context) {
 	var users []models.User
-	db.DB.Preload("Role").Find(&users)
-	c.JSON(http.StatusOK, gin.H{"users": users})
+	if err := db.DB.Preload("Role").Find(&users).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
+		return
+	}
+
+	var usersResponse []response.UserResponseDTO
+	for _, user := range users {
+		usersResponse = append(usersResponse, response.UserResponseDTO{
+			IDUser:   user.IDUser,
+			UserName: user.UserName,
+			RoleName: user.Role.RoleName, // Aquí accedemos correctamente al nombre del rol
+			Password: user.Password,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"users": usersResponse})
+	//c.JSON(http.StatusOK, gin.H{"users": users})
 }
 
 // GetUser godoc
@@ -72,7 +143,15 @@ func GetUser(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"user": user})
+
+	userResponse := response.UserResponseDTO{
+		IDUser:   user.IDUser,
+		UserName: user.UserName,
+		RoleName: user.Role.RoleName, // Asegúrate de que el campo en Role sea `NombreRol`
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": userResponse})
+	//c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
 // UpdateUser godoc
@@ -115,7 +194,17 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"user": existingUser})
+	var role models.Role
+	db.DB.First(&role, existingUser.IDRole)
+
+	userResponse := response.UserResponseDTO{
+		IDUser:   existingUser.IDUser,
+		UserName: existingUser.UserName,
+		RoleName: role.RoleName,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"user": userResponse})
+	//c.JSON(http.StatusOK, gin.H{"user": existingUser})
 }
 
 // DeleteUser godoc
