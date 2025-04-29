@@ -5,8 +5,10 @@ import (
 	"ClinicalSandBox/internal/API/dto/request"
 	"ClinicalSandBox/internal/API/dto/response"
 	"ClinicalSandBox/internal/API/models"
+	"ClinicalSandBox/internal/auth/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -43,6 +45,13 @@ func CreateUserAndPatient(c *gin.Context) {
 		return
 	}
 
+	// Hashear la contraseña
+	hashedPassword, err := services.HashPassword(userAndPatientDTO.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al procesar la contraseña"})
+		return
+	}
+
 	// Iniciar una transacción
 	tx := db.DB.Begin()
 	if tx.Error != nil {
@@ -50,14 +59,11 @@ func CreateUserAndPatient(c *gin.Context) {
 		return
 	}
 
-	// Asignar manualmente el ID del rol de Paciente (3)
-	//const patientRoleID = 3
-
-	// Crear el usuario
+	// Crear el usuario con la contraseña hasheada
 	user := models.User{
-		IDRole:   patientRoleID, // Siempre asignar el rol de Paciente (3)
+		IDRole:   patientRoleID,
 		UserName: userAndPatientDTO.UserName,
-		Password: userAndPatientDTO.Password,
+		Password: hashedPassword, // Usar la contraseña hasheada
 	}
 
 	if err := tx.Create(&user).Error; err != nil {
@@ -94,10 +100,10 @@ func CreateUserAndPatient(c *gin.Context) {
 
 	// Crear el paciente
 	patient := models.Patient{
-		IDRole:               patientRoleID,                     // Siempre asignar el rol de Paciente (3)
-		IDIdentification:     identification.IDIdentification,   // Asignar el ID del identification creado
-		IDDemographicData:    demographicData.IDDemographicData, // Asignar el ID del demographic_data creado
-		IDUser:               user.IDUser,                       // Asignar el ID del usuario creado
+		IDRole:               patientRoleID,
+		IDIdentification:     identification.IDIdentification,
+		IDDemographicData:    demographicData.IDDemographicData,
+		IDUser:               user.IDUser,
 		FullName:             userAndPatientDTO.FullName,
 		BirthDate:            birthDate,
 		Gender:               userAndPatientDTO.Gender,
@@ -122,7 +128,7 @@ func CreateUserAndPatient(c *gin.Context) {
 	userResponse := response.UserResponseDTO{
 		IDUser:   user.IDUser,
 		UserName: user.UserName,
-		RoleName: "Paciente", // Asignar manualmente el nombre del rol
+		RoleName: "Paciente",
 	}
 
 	patientResponse := response.PatientResponseDTO{
@@ -189,7 +195,7 @@ func GetUserAndPatients(c *gin.Context) {
 				Address:              patient.Address,
 				Phone:                patient.Phone,
 				SocialSecurityNumber: patient.SocialSecurityNumber,
-				RoleName:             patient.Role.RoleName,
+				//RoleName:             patient.Role.RoleName,
 			},
 			DemographicData: response.DemographicDataResponseDTO{
 				IDDemographicData:       patient.DemographicData.IDDemographicData,
@@ -439,7 +445,9 @@ func UpdateUserAndPatient(c *gin.Context) {
 // @Tags patients
 // @Param id path string true "Patient ID"
 // @Success 204
+// @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
 // @Router /user-and-patients/{id} [delete]
 func DeleteUserAndPatient(c *gin.Context) {
 	id := c.Param("id")
@@ -448,6 +456,18 @@ func DeleteUserAndPatient(c *gin.Context) {
 	// Verificar que el paciente existe
 	if err := db.DB.Preload("User").Preload("Identification").Preload("DemographicData").First(&patient, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Patient not found"})
+		return
+	}
+
+	// Verificar si el paciente tiene historial médico
+	var medicalHistoryCount int64
+	if err := db.DB.Model(&models.MedicalRecord{}).Where("id_paciente = ?", id).Count(&medicalHistoryCount).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check medical history"})
+		return
+	}
+
+	if medicalHistoryCount > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete patient because it has associated Medical Record"})
 		return
 	}
 
@@ -461,7 +481,12 @@ func DeleteUserAndPatient(c *gin.Context) {
 	// Eliminar el paciente
 	if err := tx.Delete(&patient).Error; err != nil {
 		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete patient"})
+		// Manejar específicamente el error de llave foránea por si acaso
+		if strings.Contains(err.Error(), "violates foreign key constraint") {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete patient because it has associated records"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete patient"})
+		}
 		return
 	}
 

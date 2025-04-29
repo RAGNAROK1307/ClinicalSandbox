@@ -1,15 +1,4 @@
 definitions:
-  models.ClinicalNote:
-    properties:
-      consultationVisit:
-        $ref: '#/definitions/models.ConsultationVisit'
-      id_consulta:
-        type: integer
-      notas_progreso:
-        type: string
-      observaciones_recomendaciones:
-        type: string
-    type: object
   models.ConsentAuthorization:
     properties:
       detalles:
@@ -55,23 +44,6 @@ definitions:
       nacionalidad:
         type: string
     type: object
-  models.DiagnosticImage:
-    properties:
-      consultationVisit:
-        $ref: '#/definitions/models.ConsultationVisit'
-      descripcion:
-        type: string
-      fecha_imagen:
-        type: string
-      id_consulta:
-        type: integer
-      interpretacion_imagen:
-        type: string
-      ruta_archivo_externo:
-        type: string
-      tipo_imagen:
-        type: string
-    type: object
   models.HospitalEmployee:
     properties:
       direccion:
@@ -107,27 +79,17 @@ definitions:
       tipo_documento:
         type: string
     type: object
-  models.Laboratory:
-    properties:
-      consultationVisit:
-        $ref: '#/definitions/models.ConsultationVisit'
-      fecha_prueba:
-        type: string
-      id_consulta:
-        type: integer
-      resultados_prueba:
-        type: string
-      ruta_archivo_externo:
-        type: string
-      tipo_prueba:
-        type: string
-    type: object
   models.MedicalRecord:
     properties:
       alergias:
         type: string
       antecedentes_familiares:
         type: string
+      consultationVisits:
+        description: Relación uno a muchos
+        items:
+          $ref: '#/definitions/models.ConsultationVisit'
+        type: array
       diagnosticos_previos:
         type: string
       enfermedades_cronicas:
@@ -141,10 +103,17 @@ definitions:
       id_paciente:
         description: Llave foránea que referencia la tabla roles
         type: integer
+      imagen_paciente:
+        type: string
       medicamentos_actuales:
         type: string
       patient:
         $ref: '#/definitions/models.Patient'
+      treatmentPrescriptions:
+        description: Relación uno a muchos
+        items:
+          $ref: '#/definitions/models.TreatmentPrescription'
+        type: array
     type: object
   models.Patient:
     properties:
@@ -217,6 +186,14 @@ definitions:
         allOf:
         - $ref: '#/definitions/models.Role'
         description: Carga la información del rol relacionado
+    type: object
+  request.AdminUpdatePasswordDTO:
+    properties:
+      new_password:
+        minLength: 8
+        type: string
+    required:
+    - new_password
     type: object
   request.CreateClinicalNoteDTO:
     properties:
@@ -300,8 +277,6 @@ definitions:
         type: integer
       interpretacion_imagen:
         type: string
-      ruta_archivo_externo:
-        type: string
       tipo_imagen:
         type: string
     required:
@@ -309,7 +284,6 @@ definitions:
     - fecha_imagen
     - id_consulta
     - interpretacion_imagen
-    - ruta_archivo_externo
     - tipo_imagen
     type: object
   request.CreateHospitalEmployeeAndUserDTO:
@@ -395,16 +369,59 @@ definitions:
         type: integer
       resultados_prueba:
         type: string
-      ruta_archivo_externo:
-        type: string
       tipo_prueba:
         type: string
     required:
     - fecha_prueba
     - id_consulta
     - resultados_prueba
-    - ruta_archivo_externo
     - tipo_prueba
+    type: object
+  request.CreateMedicalRecordAndRelatedDTO:
+    properties:
+      alergias:
+        type: string
+      antecedentes_familiares:
+        type: string
+      cantidad:
+        type: string
+      diagnosticos_previos:
+        description: PatientImage       string `json:"imagen_paciente" binding:"required"`
+        type: string
+      duracion_tratamiento:
+        type: string
+      enfermedades_cronicas:
+        type: string
+      fecha_hora_visita:
+        type: string
+      frecuencia:
+        type: string
+      historial_cirugias:
+        type: string
+      id_empleado_hospital:
+        description: Campos para ConsultationVisit
+        type: integer
+      id_paciente:
+        description: Campos para MedicalRecord
+        type: integer
+      instrucciones:
+        type: string
+      medicamento_prescrito:
+        description: Campos para TreatmentPrescription
+        type: string
+      medicamentos_actuales:
+        type: string
+      motivo_visita:
+        type: string
+      notas_medicas:
+        type: string
+      resultados_examenes:
+        type: string
+    required:
+    - fecha_hora_visita
+    - id_empleado_hospital
+    - id_paciente
+    - motivo_visita
     type: object
   request.CreateMedicalRecordDTO:
     properties:
@@ -425,6 +442,11 @@ definitions:
       id_paciente:
         description: ID del rol asociado, requerido
         type: integer
+      imagen_paciente:
+        description: |-
+          IDConsultationVisit     uint      `json:"id_consulta" binding:"required"`
+          IDTreatmentPrescription uint      `json:"id_tratamiento" binding:"required"`
+        type: string
       medicamentos_actuales:
         type: string
     required:
@@ -436,6 +458,7 @@ definitions:
     - fecha_creacion_historial
     - historial_cirugias
     - id_paciente
+    - imagen_paciente
     - medicamentos_actuales
     type: object
   request.CreatePatientDTO:
@@ -592,6 +615,36 @@ definitions:
       tipo_documento:
         type: string
     type: object
+  request.UpdateMedicalRecordDTO:
+    properties:
+      alergias:
+        type: string
+      antecedentes_familiares:
+        type: string
+      diagnosticos_previos:
+        type: string
+      enfermedades_cronicas:
+        type: string
+      fecha_actualizacion_historial:
+        type: string
+      fecha_creacion_historial:
+        type: string
+      historial_cirugias:
+        type: string
+      medicamentos_actuales:
+        type: string
+    type: object
+  request.UpdatePasswordDTO:
+    properties:
+      current_password:
+        type: string
+      new_password:
+        minLength: 8
+        type: string
+    required:
+    - current_password
+    - new_password
+    type: object
   request.UpdateUserAndPatientDTO:
     properties:
       direccion:
@@ -625,6 +678,34 @@ definitions:
       tipo_documento:
         type: string
     type: object
+  response.ClinicalResponseNoteDTO:
+    properties:
+      id_consulta:
+        type: integer
+      notas_progreso:
+        type: string
+      observaciones_recomendaciones:
+        type: string
+    type: object
+  response.ConsultationVisitResponseDTO:
+    properties:
+      fecha_hora_visita:
+        type: string
+      hospital_employee_full_name:
+        type: string
+      id_consulta:
+        type: integer
+      id_paciente:
+        type: integer
+      id_personal_hospital:
+        type: integer
+      notas_medicas:
+        type: string
+      razon_visita:
+        type: string
+      resultados_examenes:
+        type: string
+    type: object
   response.DemographicDataResponseDTO:
     properties:
       estado_civil:
@@ -636,6 +717,33 @@ definitions:
       informacion_laboral:
         type: string
       nacionalidad:
+        type: string
+    type: object
+  response.DiagnosticImageFileResponseDTO:
+    properties:
+      image:
+        description: Imagen en base64
+        type: string
+      mime_type:
+        description: Tipo MIME de la imagen
+        type: string
+    type: object
+  response.DiagnosticImageResponseDTO:
+    properties:
+      descripcion:
+        type: string
+      fecha_imagen:
+        example: "2025-01-20"
+        type: string
+      id_consulta:
+        type: integer
+      id_imagen:
+        type: integer
+      interpretacion_imagen:
+        type: string
+      ruta_archivo_externo:
+        type: string
+      tipo_imagen:
         type: string
     type: object
   response.HospitalEmployeeAndUserResponseDTO:
@@ -663,10 +771,9 @@ definitions:
           IDUser           uint      `json:"id_usuarios"`
         type: integer
       nombre_completo:
-        type: string
-      nombre_rol:
-        type: string
-      nombre_usuario:
+        description: |-
+          UserName           string    `json:"nombre_usuario"`
+          RoleName  string    `json:"nombre_rol"`
         type: string
       telefono:
         type: string
@@ -680,11 +787,86 @@ definitions:
       tipo_documento:
         type: string
     type: object
+  response.LaboratoryFileResponseDTO:
+    properties:
+      file_content:
+        description: Contenido del archivo en base64
+        type: string
+      message:
+        description: Mensaje opcional
+        type: string
+      mime_type:
+        description: 'Tipo MIME del archivo (ej: "image/jpeg", "application/pdf")'
+        type: string
+    type: object
+  response.LaboratoryResponseDTO:
+    properties:
+      fecha_prueba:
+        example: "2025-01-20"
+        type: string
+      id_consulta:
+        type: integer
+      id_laboratorio:
+        type: integer
+      resultados_prueba:
+        type: string
+      ruta_archivo_externo:
+        type: string
+      tipo_prueba:
+        type: string
+    type: object
+  response.MedicalRecordAndRelatedResponseDTO:
+    properties:
+      consultation_visit:
+        items:
+          $ref: '#/definitions/response.ConsultationVisitResponseDTO'
+        type: array
+      medical_record:
+        $ref: '#/definitions/response.MedicalRecordResponseDTO'
+      patient:
+        $ref: '#/definitions/response.PatientResponseDTO'
+      treatment_prescription:
+        items:
+          $ref: '#/definitions/response.TreatmentPrescriptionResponseDTO'
+        type: array
+    type: object
+  response.MedicalRecordImageResponseDTO:
+    properties:
+      image:
+        type: string
+      mime_type:
+        type: string
+    type: object
+  response.MedicalRecordResponseDTO:
+    properties:
+      alergias:
+        type: string
+      antecedentes_familiares:
+        type: string
+      diagnosticos_previos:
+        type: string
+      enfermedades_cronicas:
+        type: string
+      fecha_actualizacion_historial:
+        type: string
+      fecha_creacion_historial:
+        type: string
+      historial_cirugias:
+        type: string
+      id_paciente:
+        description: ID del rol asociado, requerido
+        type: integer
+      imagen_paciente:
+        description: |-
+          IDConsultationVisit     uint      `json:"id_consulta"`
+          IDTreatmentPrescription uint      `json:"id_tratamiento"`
+        type: string
+      medicamentos_actuales:
+        type: string
+    type: object
   response.PatientResponseDTO:
     properties:
       direccion:
-        type: string
-      estado_civil:
         type: string
       fecha_nacimiento:
         example: "2025-01-20"
@@ -698,25 +880,28 @@ definitions:
           IDDemographicData    uint   `json:"id_datos_demograficos" binding:"required"`
           IDUser               uint   `json:"id_usuarios" binding:"required"`
         type: integer
-      informacion_etnica_racial:
-        type: string
-      informacion_laboral:
-        type: string
-      nacionalidad:
-        type: string
       nombre_completo:
-        type: string
-      nombre_rol:
-        type: string
-      nombre_usuario:
-        type: string
-      numero_documento:
         type: string
       numero_seguro_social:
         type: string
       telefono:
         type: string
-      tipo_documento:
+    type: object
+  response.TreatmentPrescriptionResponseDTO:
+    properties:
+      dosis:
+        type: string
+      duracion_tratamiento:
+        type: string
+      frecuencia:
+        type: string
+      id_paciente:
+        type: integer
+      id_tratamiento:
+        type: integer
+      instrucciones:
+        type: string
+      medicamento_prescrito:
         type: string
     type: object
   response.UserAndPatientResponseDTO:
@@ -732,8 +917,6 @@ definitions:
     type: object
   response.UserResponseDTO:
     properties:
-      contraseña:
-        type: string
       id_usuario:
         description: ID del usuario
         type: integer
@@ -756,7 +939,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.ClinicalNote'
+              $ref: '#/definitions/response.ClinicalResponseNoteDTO'
             type: array
       summary: List all clinical_notes
       tags:
@@ -778,7 +961,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.ClinicalNote'
+            $ref: '#/definitions/response.ClinicalResponseNoteDTO'
         "400":
           description: Bad Request
           schema:
@@ -790,9 +973,9 @@ paths:
       - clinical_notes
   /clinical_notes/{id}:
     delete:
-      description: Remove a clinical_note by its ID
+      description: Remove a clinical_note by its consultation ID
       parameters:
-      - description: ClinicalNote ID
+      - description: ConsultationVisit ID
         in: path
         name: id
         required: true
@@ -806,13 +989,13 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Delete a clinical_note
+      summary: Delete a clinical_note by consultation ID
       tags:
       - clinical_notes
     get:
-      description: Retrieve a single clinical_note by its ID
+      description: Retrieve a single clinical_note by its consultation ID
       parameters:
-      - description: ClinicalNote ID
+      - description: ConsultationVisit ID
         in: path
         name: id
         required: true
@@ -823,22 +1006,23 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ClinicalNote'
+            $ref: '#/definitions/response.ClinicalResponseNoteDTO'
         "404":
           description: Not Found
           schema:
             additionalProperties:
               type: string
             type: object
-      summary: Get a clinical_note by ID
+      summary: Get a clinical_note by consultation ID
       tags:
       - clinical_notes
     put:
       consumes:
       - application/json
-      description: Update the information of an existing clinical_note
+      description: Update the information of an existing clinical_note by consultation
+        ID
       parameters:
-      - description: ClinicalNote ID
+      - description: ConsultationVisit ID
         in: path
         name: id
         required: true
@@ -855,7 +1039,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ClinicalNote'
+            $ref: '#/definitions/response.ClinicalResponseNoteDTO'
         "400":
           description: Bad Request
           schema:
@@ -868,7 +1052,7 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Update a clinical_note
+      summary: Update a clinical_note by consultation ID
       tags:
       - clinical_notes
   /consent_authorizations:
@@ -1040,7 +1224,8 @@ paths:
       - consultation_visits
   /consultation_visits/{id}:
     delete:
-      description: Remove a consultation_visit by its ID
+      description: Remove a consultation_visit by its ID. Cannot delete if has related
+        clinical notes, laboratories or diagnostic images.
       parameters:
       - description: ConsultationVisit ID
         in: path
@@ -1050,6 +1235,12 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
         "404":
           description: Not Found
           schema:
@@ -1256,7 +1447,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.DiagnosticImage'
+              $ref: '#/definitions/response.DiagnosticImageResponseDTO'
             type: array
       summary: List all diagnostic_images
       tags:
@@ -1278,7 +1469,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.DiagnosticImage'
+            $ref: '#/definitions/response.DiagnosticImageResponseDTO'
         "400":
           description: Bad Request
           schema:
@@ -1290,9 +1481,9 @@ paths:
       - diagnostic_images
   /diagnostic_images/{id}:
     delete:
-      description: Remove a diagnostic_image by its ID
+      description: Remove a diagnostic_image by its consultation ID
       parameters:
-      - description: DiagnosticImage ID
+      - description: ConsultationVisit ID
         in: path
         name: id
         required: true
@@ -1306,13 +1497,19 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Delete a diagnostic_image
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a diagnostic_image by consultation ID
       tags:
       - diagnostic_images
     get:
-      description: Retrieve a single diagnostic_image by its ID
+      description: Retrieve a single diagnostic_image by its consultation ID
       parameters:
-      - description: DiagnosticImage ID
+      - description: ConsultationVisit ID
         in: path
         name: id
         required: true
@@ -1323,22 +1520,23 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.DiagnosticImage'
+            $ref: '#/definitions/response.DiagnosticImageResponseDTO'
         "404":
           description: Not Found
           schema:
             additionalProperties:
               type: string
             type: object
-      summary: Get a diagnostic_image by ID
+      summary: Get a diagnostic_image by consultation ID
       tags:
       - diagnostic_images
     put:
       consumes:
       - application/json
-      description: Update the information of an existing diagnostic_image
+      description: Update the information of an existing diagnostic_image by consultation
+        ID
       parameters:
-      - description: DiagnosticImage ID
+      - description: ConsultationVisit ID
         in: path
         name: id
         required: true
@@ -1355,7 +1553,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.DiagnosticImage'
+            $ref: '#/definitions/response.DiagnosticImageResponseDTO'
         "400":
           description: Bad Request
           schema:
@@ -1368,7 +1566,134 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Update a diagnostic_image
+      summary: Update a diagnostic_image by consultation ID
+      tags:
+      - diagnostic_images
+  /diagnostic_images/{id}/file:
+    delete:
+      description: Delete the diagnostic image from database
+      parameters:
+      - description: DiagnosticImage ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete diagnostic image
+      tags:
+      - diagnostic_images
+    get:
+      description: Get the diagnostic image (base64 encoded)
+      parameters:
+      - description: DiagnosticImage ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DiagnosticImageFileResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get diagnostic image
+      tags:
+      - diagnostic_images
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a diagnostic image file (stored as base64 in database)
+      parameters:
+      - description: DiagnosticImage ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Diagnostic image file
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DiagnosticImageFileResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Upload diagnostic image
+      tags:
+      - diagnostic_images
+    put:
+      consumes:
+      - multipart/form-data
+      description: Update the diagnostic image (base64 encoded)
+      parameters:
+      - description: DiagnosticImage ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Diagnostic image file
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.DiagnosticImageFileResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update diagnostic image
       tags:
       - diagnostic_images
   /doctor-and-user:
@@ -1427,8 +1752,20 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
         "404":
           description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
           schema:
             additionalProperties:
               type: string
@@ -1887,7 +2224,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/models.Laboratory'
+              $ref: '#/definitions/response.LaboratoryResponseDTO'
             type: array
       summary: List all laboratories
       tags:
@@ -1909,7 +2246,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/models.Laboratory'
+            $ref: '#/definitions/response.LaboratoryResponseDTO'
         "400":
           description: Bad Request
           schema:
@@ -1921,9 +2258,9 @@ paths:
       - laboratories
   /laboratories/{id}:
     delete:
-      description: Remove a laboratory by its ID
+      description: Remove a laboratory by its consultation ID
       parameters:
-      - description: Laboratory ID
+      - description: ConsultationVisit ID
         in: path
         name: id
         required: true
@@ -1937,13 +2274,13 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Delete a laboratory
+      summary: Delete a laboratory by consultation ID
       tags:
       - laboratories
     get:
-      description: Retrieve a single laboratory by its ID
+      description: Retrieve a single laboratory by its consultation ID
       parameters:
-      - description: Laboratory ID
+      - description: ConsultationVisit ID
         in: path
         name: id
         required: true
@@ -1954,22 +2291,23 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Laboratory'
+            $ref: '#/definitions/response.LaboratoryResponseDTO'
         "404":
           description: Not Found
           schema:
             additionalProperties:
               type: string
             type: object
-      summary: Get a laboratory by ID
+      summary: Get a laboratory by consultation ID
       tags:
       - laboratories
     put:
       consumes:
       - application/json
-      description: Update the information of an existing laboratory
+      description: Update the information of an existing laboratory by consultation
+        ID
       parameters:
-      - description: Laboratory ID
+      - description: ConsultationVisit ID
         in: path
         name: id
         required: true
@@ -1986,7 +2324,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Laboratory'
+            $ref: '#/definitions/response.LaboratoryResponseDTO'
         "400":
           description: Bad Request
           schema:
@@ -1999,9 +2337,371 @@ paths:
             additionalProperties:
               type: string
             type: object
-      summary: Update a laboratory
+      summary: Update a laboratory by consultation ID
       tags:
       - laboratories
+  /laboratories/{id}/file:
+    delete:
+      description: Delete the laboratory file from database
+      parameters:
+      - description: Laboratory ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete laboratory file
+      tags:
+      - laboratories
+    get:
+      description: Get the laboratory file (base64 encoded)
+      parameters:
+      - description: Laboratory ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.LaboratoryFileResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get laboratory file
+      tags:
+      - laboratories
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a file (PDF, image, etc.) for a laboratory result
+      parameters:
+      - description: Laboratory ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Laboratory file
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.LaboratoryFileResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Upload laboratory file
+      tags:
+      - laboratories
+    put:
+      consumes:
+      - multipart/form-data
+      description: Update the laboratory file (base64 encoded)
+      parameters:
+      - description: Laboratory ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Laboratory file
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.LaboratoryFileResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update laboratory file
+      tags:
+      - laboratories
+  /medical-records-and-related:
+    get:
+      description: Retrieve a list of all medical records with their related treatment
+        prescriptions and consultation visits
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/response.MedicalRecordAndRelatedResponseDTO'
+            type: array
+      summary: List all medical records and related data
+      tags:
+      - medical_records
+    post:
+      consumes:
+      - application/json
+      description: Adds a new medical_record, treatment_prescription, and consultation_visit
+        to the system in a single transaction
+      parameters:
+      - description: MedicalRecord, TreatmentPrescription, and ConsultationVisit data
+        in: body
+        name: medical_record_and_related
+        required: true
+        schema:
+          $ref: '#/definitions/request.CreateMedicalRecordAndRelatedDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/response.MedicalRecordAndRelatedResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new medical_record, treatment_prescription, and consultation_visit
+      tags:
+      - medical_records
+  /medical-records-and-related/{id}:
+    get:
+      description: Retrieve a single medical record with its related treatment prescription
+        and consultation visit by patient ID
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.MedicalRecordAndRelatedResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a medical record and related data by patient ID
+      tags:
+      - medical_records
+    put:
+      consumes:
+      - application/json
+      description: Update the information of an existing medical_record
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated medical_record data
+        in: body
+        name: medical_record
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdateMedicalRecordDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MedicalRecord'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a medical_record
+      tags:
+      - medical_records
+  /medical-records/{id}/image:
+    delete:
+      description: Delete a patient image from medical records
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete patient image
+      tags:
+      - medical_records
+    get:
+      description: Get a patient image from medical records
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.MedicalRecordImageResponseDTO'
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get patient image
+      tags:
+      - medical_records
+    post:
+      consumes:
+      - multipart/form-data
+      description: Upload a patient image for medical records
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Patient image
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.MedicalRecordImageResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Upload patient image
+      tags:
+      - medical_records
+    put:
+      consumes:
+      - multipart/form-data
+      description: Update a patient image in medical records
+      parameters:
+      - description: Patient ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Patient image
+        in: formData
+        name: file
+        required: true
+        type: file
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/response.MedicalRecordImageResponseDTO'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update patient image
+      tags:
+      - medical_records
   /medical_records:
     get:
       description: Retrieve a list of all medical_records in the system
@@ -2559,8 +3259,20 @@ paths:
       responses:
         "204":
           description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
         "404":
           description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
           schema:
             additionalProperties:
               type: string
@@ -2757,6 +3469,111 @@ paths:
               type: string
             type: object
       summary: Update a user
+      tags:
+      - users
+  /users/{id}/password:
+    put:
+      consumes:
+      - application/json
+      description: Updates user password after verifying current password
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Password data
+        in: body
+        name: password
+        required: true
+        schema:
+          $ref: '#/definitions/request.UpdatePasswordDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Update user password
+      tags:
+      - users
+  /users/{id}/passwords:
+    put:
+      consumes:
+      - application/json
+      description: Admin updates any user password without current password (admin
+        only)
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: New password
+        in: body
+        name: password
+        required: true
+        schema:
+          $ref: '#/definitions/request.AdminUpdatePasswordDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Admin updates user password
       tags:
       - users
 swagger: "2.0"

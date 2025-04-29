@@ -5,6 +5,7 @@ import (
 	"ClinicalSandBox/internal/API/dto/request"
 	"ClinicalSandBox/internal/API/dto/response"
 	"ClinicalSandBox/internal/API/models"
+	"ClinicalSandBox/internal/auth/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
@@ -43,6 +44,13 @@ func CreateExecutiveAndUser(c *gin.Context) {
 		return
 	}
 
+	// Hashear la contraseña
+	hashedPassword, err := services.HashPassword(executiveAndUserDTO.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al procesar la contraseña"})
+		return
+	}
+
 	// Iniciar una transacción
 	tx := db.DB.Begin()
 	if tx.Error != nil {
@@ -50,14 +58,11 @@ func CreateExecutiveAndUser(c *gin.Context) {
 		return
 	}
 
-	// Asignar siempre el rol de Directivo (ID = 2)
-	//const executiveRoleID = 2
-
-	// Crear el usuario
+	// Crear el usuario con la contraseña hasheada
 	user := models.User{
 		IDRole:   executiveRoleID,
 		UserName: executiveAndUserDTO.UserName,
-		Password: executiveAndUserDTO.Password,
+		Password: hashedPassword, // Usar la contraseña hasheada
 	}
 
 	if err := tx.Create(&user).Error; err != nil {
@@ -111,13 +116,13 @@ func CreateExecutiveAndUser(c *gin.Context) {
 
 	executiveResponse := response.HospitalEmployeeResponseDTO{
 		IDHospitalEmployee: executive.IDHospitalEmployee,
-		UserName:           user.UserName,
-		RoleName:           "Directivo",
-		FullName:           executive.FullName,
-		BirthDate:          executive.BirthDate,
-		Gender:             executive.Gender,
-		Address:            executive.Address,
-		Phone:              executive.Phone,
+		//UserName:           user.UserName,
+		//RoleName:  "Directivo",
+		FullName:  executive.FullName,
+		BirthDate: executive.BirthDate,
+		Gender:    executive.Gender,
+		Address:   executive.Address,
+		Phone:     executive.Phone,
 	}
 
 	identificationResponse := response.IdentificationResponseDTO{
@@ -159,13 +164,13 @@ func GetExecutivesAndUsers(c *gin.Context) {
 			},
 			HospitalEmployee: response.HospitalEmployeeResponseDTO{
 				IDHospitalEmployee: executive.IDHospitalEmployee,
-				UserName:           executive.User.UserName,
-				RoleName:           executive.Role.RoleName,
-				FullName:           executive.FullName,
-				BirthDate:          executive.BirthDate,
-				Gender:             executive.Gender,
-				Address:            executive.Address,
-				Phone:              executive.Phone,
+				//UserName:           executive.User.UserName,
+				//RoleName:  executive.Role.RoleName,
+				FullName:  executive.FullName,
+				BirthDate: executive.BirthDate,
+				Gender:    executive.Gender,
+				Address:   executive.Address,
+				Phone:     executive.Phone,
 			},
 			Identification: response.IdentificationResponseDTO{
 				IDIdentification: executive.Identification.IDIdentification,
@@ -211,13 +216,13 @@ func GetExecutiveAndUserByID(c *gin.Context) {
 		},
 		HospitalEmployee: response.HospitalEmployeeResponseDTO{
 			IDHospitalEmployee: executive.IDHospitalEmployee,
-			UserName:           executive.User.UserName,
-			RoleName:           executive.Role.RoleName,
-			FullName:           executive.FullName,
-			BirthDate:          executive.BirthDate,
-			Gender:             executive.Gender,
-			Address:            executive.Address,
-			Phone:              executive.Phone,
+			//UserName:           executive.User.UserName,
+			//RoleName:  executive.Role.RoleName,
+			FullName:  executive.FullName,
+			BirthDate: executive.BirthDate,
+			Gender:    executive.Gender,
+			Address:   executive.Address,
+			Phone:     executive.Phone,
 		},
 		Identification: response.IdentificationResponseDTO{
 			IDIdentification: executive.Identification.IDIdentification,
@@ -349,13 +354,13 @@ func UpdateExecutiveAndUser(c *gin.Context) {
 		},
 		HospitalEmployee: response.HospitalEmployeeResponseDTO{
 			IDHospitalEmployee: existingExecutive.IDHospitalEmployee,
-			UserName:           existingExecutive.User.UserName,
-			RoleName:           "Directivo",
-			FullName:           existingExecutive.FullName,
-			BirthDate:          existingExecutive.BirthDate,
-			Gender:             existingExecutive.Gender,
-			Address:            existingExecutive.Address,
-			Phone:              existingExecutive.Phone,
+			//UserName:           existingExecutive.User.UserName,
+			//RoleName:  "Directivo",
+			FullName:  existingExecutive.FullName,
+			BirthDate: existingExecutive.BirthDate,
+			Gender:    existingExecutive.Gender,
+			Address:   existingExecutive.Address,
+			Phone:     existingExecutive.Phone,
 		},
 		Identification: response.IdentificationResponseDTO{
 			IDIdentification: existingExecutive.Identification.IDIdentification,

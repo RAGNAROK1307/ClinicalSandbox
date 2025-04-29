@@ -89,21 +89,21 @@ func GetPatients(c *gin.Context) {
 	var patientsResponse []response.PatientResponseDTO
 	for _, patient := range patients {
 		patientsResponse = append(patientsResponse, response.PatientResponseDTO{
-			IDPatient:               patient.IDPatient,
-			FullName:                patient.FullName,
-			BirthDate:               patient.BirthDate,
-			Gender:                  patient.Gender,
-			Address:                 patient.Address,
-			Phone:                   patient.Phone,
-			SocialSecurityNumber:    patient.SocialSecurityNumber,
-			RoleName:                patient.Role.RoleName,
-			UserName:                patient.User.UserName,
-			DocumentType:            patient.Identification.DocumentType,
-			DocumentNumber:          patient.Identification.DocumentNumber,
-			RacialEthnicInformation: patient.DemographicData.RacialEthnicInformation,
-			MaritalStatus:           patient.DemographicData.MaritalStatus,
-			Nationality:             patient.DemographicData.Nationality,
-			EmploymentInformation:   patient.DemographicData.EmploymentInformation,
+			IDPatient:            patient.IDPatient,
+			FullName:             patient.FullName,
+			BirthDate:            patient.BirthDate,
+			Gender:               patient.Gender,
+			Address:              patient.Address,
+			Phone:                patient.Phone,
+			SocialSecurityNumber: patient.SocialSecurityNumber,
+			//RoleName:             patient.Role.RoleName,
+			//UserName:             patient.User.UserName,
+			//DocumentType:            patient.Identification.DocumentType,
+			//DocumentNumber:          patient.Identification.DocumentNumber,
+			//RacialEthnicInformation: patient.DemographicData.RacialEthnicInformation,
+			//MaritalStatus:           patient.DemographicData.MaritalStatus,
+			//Nationality:             patient.DemographicData.Nationality,
+			//EmploymentInformation:   patient.DemographicData.EmploymentInformation,
 		})
 	}
 
@@ -129,21 +129,21 @@ func GetPatient(c *gin.Context) {
 	}
 
 	patientResponse := response.PatientResponseDTO{
-		IDPatient:               patient.IDPatient,
-		FullName:                patient.FullName,
-		BirthDate:               patient.BirthDate,
-		Gender:                  patient.Gender,
-		Address:                 patient.Address,
-		Phone:                   patient.Phone,
-		SocialSecurityNumber:    patient.SocialSecurityNumber,
-		RoleName:                patient.Role.RoleName,
-		UserName:                patient.User.UserName,
-		DocumentType:            patient.Identification.DocumentType,
-		DocumentNumber:          patient.Identification.DocumentNumber,
-		RacialEthnicInformation: patient.DemographicData.RacialEthnicInformation,
-		MaritalStatus:           patient.DemographicData.MaritalStatus,
-		Nationality:             patient.DemographicData.Nationality,
-		EmploymentInformation:   patient.DemographicData.EmploymentInformation,
+		IDPatient:            patient.IDPatient,
+		FullName:             patient.FullName,
+		BirthDate:            patient.BirthDate,
+		Gender:               patient.Gender,
+		Address:              patient.Address,
+		Phone:                patient.Phone,
+		SocialSecurityNumber: patient.SocialSecurityNumber,
+		//RoleName:             patient.Role.RoleName,
+		//UserName:             patient.User.UserName,
+		//DocumentType:            patient.Identification.DocumentType,
+		//DocumentNumber:          patient.Identification.DocumentNumber,
+		//RacialEthnicInformation: patient.DemographicData.RacialEthnicInformation,
+		//MaritalStatus:           patient.DemographicData.MaritalStatus,
+		//Nationality:             patient.DemographicData.Nationality,
+		//EmploymentInformation:   patient.DemographicData.EmploymentInformation,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"user": patientResponse})

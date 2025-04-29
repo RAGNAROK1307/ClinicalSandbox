@@ -7,6 +7,7 @@ import (
 	"ClinicalSandBox/internal/API/models"
 	"ClinicalSandBox/internal/auth/services"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/crypto/bcrypt"
 	"net/http"
 )
 
@@ -119,7 +120,7 @@ func GetUsers(c *gin.Context) {
 			IDUser:   user.IDUser,
 			UserName: user.UserName,
 			RoleName: user.Role.RoleName, // Aquí accedemos correctamente al nombre del rol
-			Password: user.Password,
+			//Password: user.Password,
 		})
 	}
 
@@ -222,4 +223,112 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusNoContent, nil)
+}
+
+// UpdatePassword godoc
+// @Summary Update user password
+// @Description Updates user password after verifying current password
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id path int true "User ID"
+// @Param password body request.UpdatePasswordDTO true "Password data"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /users/{id}/password [put]
+func UpdatePassword(c *gin.Context) {
+	// Obtener ID del usuario objetivo
+	userID := c.Param("id")
+
+	// Bind del JSON
+	var passwordDTO request.UpdatePasswordDTO
+	if err := c.ShouldBindJSON(&passwordDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
+		return
+	}
+
+	// Buscar usuario
+	var user models.User
+	if err := db.DB.First(&user, userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+		return
+	}
+
+	// Verificar contraseña actual
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(passwordDTO.CurrentPassword)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Contraseña actual incorrecta"})
+		return
+	}
+
+	// Hashear nueva contraseña
+	hashedPassword, err := services.HashPassword(passwordDTO.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al procesar contraseña"})
+		return
+	}
+
+	// Actualizar contraseña
+	user.Password = hashedPassword
+	if err := db.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al guardar contraseña"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Contraseña actualizada correctamente"})
+}
+
+// AdminUpdatePassword godoc
+// @Summary Admin updates user password
+// @Description Admin updates any user password without current password (admin only)
+// @Tags users
+// @Accept json
+// @Produce json
+// @Security ApiKeyAuth
+// @Param id path int true "User ID"
+// @Param password body request.AdminUpdatePasswordDTO true "New password"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 401 {object} map[string]string
+// @Failure 403 {object} map[string]string
+// @Failure 404 {object} map[string]string
+// @Router /users/{id}/passwords [put]
+func AdminUpdatePassword(c *gin.Context) {
+	// Obtener ID del usuario objetivo
+	userID := c.Param("id")
+
+	// Bind del JSON
+	var passwordDTO request.AdminUpdatePasswordDTO
+	if err := c.ShouldBindJSON(&passwordDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
+		return
+	}
+
+	// Buscar usuario
+	var user models.User
+	if err := db.DB.First(&user, userID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+		return
+	}
+
+	// Hashear nueva contraseña
+	hashedPassword, err := services.HashPassword(passwordDTO.NewPassword)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al procesar contraseña"})
+		return
+	}
+
+	// Actualizar contraseña
+	user.Password = hashedPassword
+	if err := db.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al guardar contraseña"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Contraseña actualizada correctamente",
+		"user_id": userID,
+	})
 }
