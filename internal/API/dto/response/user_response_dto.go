@@ -5,5 +5,5 @@ type UserResponseDTO struct {
 	//IDRole   uint   `json:"id_rol"`         // ID del rol asociado
 	UserName string `json:"nombre_usuario"`
 	RoleName string `json:"nombre_rol"`
-	Password string `json:"contraseña"`
+	//Password string `json:"contraseña"`
 }

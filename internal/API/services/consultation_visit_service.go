@@ -126,17 +126,60 @@ func UpdateConsultationVisit(c *gin.Context) {
 
 // DeleteConsultationVisit godoc
 // @Summary Delete a consultation_visit
-// @Description Remove a consultation_visit by its ID
+// @Description Remove a consultation_visit by its ID. Cannot delete if has related clinical notes, laboratories or diagnostic images.
 // @Tags consultation_visits
 // @Param id path string true "ConsultationVisit ID"
 // @Success 204
+// @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Router /consultation_visits/{id} [delete]
 func DeleteConsultationVisit(c *gin.Context) {
 	id := c.Param("id")
+
+	// Verificar si existen registros relacionados
+	var relatedCount int64
+
+	// Verificar notas clínicas
+	if err := db.DB.Model(&models.ClinicalNote{}).
+		Where("id_consulta = ?", id).
+		Count(&relatedCount).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error checking related records"})
+		return
+	}
+	if relatedCount > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete consultation - it has clinical notes attached"})
+		return
+	}
+
+	// Verificar laboratorios
+	if err := db.DB.Model(&models.Laboratory{}).
+		Where("id_consulta = ?", id).
+		Count(&relatedCount).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error checking related records"})
+		return
+	}
+	if relatedCount > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete consultation - it has laboratory results attached"})
+		return
+	}
+
+	// Verificar imágenes diagnósticas
+	if err := db.DB.Model(&models.DiagnosticImage{}).
+		Where("id_consulta = ?", id).
+		Count(&relatedCount).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error checking related records"})
+		return
+	}
+	if relatedCount > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete consultation - it has diagnostic images attached"})
+		return
+	}
+
+	// Si no hay registros relacionados, proceder con la eliminación
 	if err := db.DB.Delete(&models.ConsultationVisit{}, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ConsultationVisit not found"})
 		return
 	}
-	c.JSON(http.StatusNoContent, nil)
+
+	c.Status(http.StatusNoContent)
 }

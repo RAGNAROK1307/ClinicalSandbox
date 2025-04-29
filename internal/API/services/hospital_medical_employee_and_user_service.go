@@ -5,8 +5,10 @@ import (
 	"ClinicalSandBox/internal/API/dto/request"
 	"ClinicalSandBox/internal/API/dto/response"
 	"ClinicalSandBox/internal/API/models"
+	"ClinicalSandBox/internal/auth/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -43,6 +45,13 @@ func CreateDoctorAndUser(c *gin.Context) {
 		return
 	}
 
+	// Hashear la contraseña
+	hashedPassword, err := services.HashPassword(doctorAndUserDTO.Password)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al procesar la contraseña"})
+		return
+	}
+
 	// Iniciar una transacción
 	tx := db.DB.Begin()
 	if tx.Error != nil {
@@ -50,14 +59,11 @@ func CreateDoctorAndUser(c *gin.Context) {
 		return
 	}
 
-	// Asignar siempre el rol de Médico (ID = 1)
-	//const doctorRoleID = 1
-
-	// Crear el usuario
+	// Crear el usuario con la contraseña hasheada
 	user := models.User{
 		IDRole:   doctorRoleID,
 		UserName: doctorAndUserDTO.UserName,
-		Password: doctorAndUserDTO.Password,
+		Password: hashedPassword, // Usar la contraseña hasheada
 	}
 
 	if err := tx.Create(&user).Error; err != nil {
@@ -111,13 +117,13 @@ func CreateDoctorAndUser(c *gin.Context) {
 
 	doctorResponse := response.HospitalEmployeeResponseDTO{
 		IDHospitalEmployee: doctor.IDHospitalEmployee,
-		UserName:           user.UserName,
-		RoleName:           "Médico",
-		FullName:           doctor.FullName,
-		BirthDate:          doctor.BirthDate,
-		Gender:             doctor.Gender,
-		Address:            doctor.Address,
-		Phone:              doctor.Phone,
+		//UserName:           user.UserName,
+		//RoleName:  "Médico",
+		FullName:  doctor.FullName,
+		BirthDate: doctor.BirthDate,
+		Gender:    doctor.Gender,
+		Address:   doctor.Address,
+		Phone:     doctor.Phone,
 	}
 
 	identificationResponse := response.IdentificationResponseDTO{
@@ -159,13 +165,13 @@ func GetDoctorsAndUsers(c *gin.Context) {
 			},
 			HospitalEmployee: response.HospitalEmployeeResponseDTO{
 				IDHospitalEmployee: doctor.IDHospitalEmployee,
-				UserName:           doctor.User.UserName,
-				RoleName:           doctor.Role.RoleName,
-				FullName:           doctor.FullName,
-				BirthDate:          doctor.BirthDate,
-				Gender:             doctor.Gender,
-				Address:            doctor.Address,
-				Phone:              doctor.Phone,
+				//UserName:           doctor.User.UserName,
+				//RoleName:  doctor.Role.RoleName,
+				FullName:  doctor.FullName,
+				BirthDate: doctor.BirthDate,
+				Gender:    doctor.Gender,
+				Address:   doctor.Address,
+				Phone:     doctor.Phone,
 			},
 			Identification: response.IdentificationResponseDTO{
 				IDIdentification: doctor.Identification.IDIdentification,
@@ -211,13 +217,13 @@ func GetDoctorAndUserByID(c *gin.Context) {
 		},
 		HospitalEmployee: response.HospitalEmployeeResponseDTO{
 			IDHospitalEmployee: doctor.IDHospitalEmployee,
-			UserName:           doctor.User.UserName,
-			RoleName:           doctor.Role.RoleName,
-			FullName:           doctor.FullName,
-			BirthDate:          doctor.BirthDate,
-			Gender:             doctor.Gender,
-			Address:            doctor.Address,
-			Phone:              doctor.Phone,
+			//UserName:           doctor.User.UserName,
+			//RoleName:  doctor.Role.RoleName,
+			FullName:  doctor.FullName,
+			BirthDate: doctor.BirthDate,
+			Gender:    doctor.Gender,
+			Address:   doctor.Address,
+			Phone:     doctor.Phone,
 		},
 		Identification: response.IdentificationResponseDTO{
 			IDIdentification: doctor.Identification.IDIdentification,
@@ -349,13 +355,13 @@ func UpdateDoctorAndUser(c *gin.Context) {
 		},
 		HospitalEmployee: response.HospitalEmployeeResponseDTO{
 			IDHospitalEmployee: existingDoctor.IDHospitalEmployee,
-			UserName:           existingDoctor.User.UserName,
-			RoleName:           "Médico",
-			FullName:           existingDoctor.FullName,
-			BirthDate:          existingDoctor.BirthDate,
-			Gender:             existingDoctor.Gender,
-			Address:            existingDoctor.Address,
-			Phone:              existingDoctor.Phone,
+			//UserName:           existingDoctor.User.UserName,
+			//RoleName:  "Médico",
+			FullName:  existingDoctor.FullName,
+			BirthDate: existingDoctor.BirthDate,
+			Gender:    existingDoctor.Gender,
+			Address:   existingDoctor.Address,
+			Phone:     existingDoctor.Phone,
 		},
 		Identification: response.IdentificationResponseDTO{
 			IDIdentification: existingDoctor.Identification.IDIdentification,
@@ -373,7 +379,9 @@ func UpdateDoctorAndUser(c *gin.Context) {
 // @Tags doctors
 // @Param id path string true "Doctor ID"
 // @Success 204
+// @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
+// @Failure 500 {object} map[string]string
 // @Router /doctors-and-users/{id} [delete]
 func DeleteDoctorAndUser(c *gin.Context) {
 	id := c.Param("id")
@@ -391,6 +399,18 @@ func DeleteDoctorAndUser(c *gin.Context) {
 		return
 	}
 
+	// Verificar si el doctor tiene consultas o visitas asociadas
+	var consultationCount int64
+	if err := db.DB.Model(&models.ConsultationVisit{}).Where("id_personal_hospital = ?", id).Count(&consultationCount).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check doctor's consultations"})
+		return
+	}
+
+	if consultationCount > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete doctor because it has associated consultations and visits"})
+		return
+	}
+
 	// Iniciar una transacción
 	tx := db.DB.Begin()
 	if tx.Error != nil {
@@ -401,7 +421,12 @@ func DeleteDoctorAndUser(c *gin.Context) {
 	// Eliminar el doctor
 	if err := tx.Delete(&doctor).Error; err != nil {
 		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete doctor"})
+		// Manejar específicamente el error de llave foránea
+		if strings.Contains(err.Error(), "violates foreign key constraint") {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete doctor because it has associated consultations and visits"})
+		} else {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete doctor"})
+		}
 		return
 	}
 

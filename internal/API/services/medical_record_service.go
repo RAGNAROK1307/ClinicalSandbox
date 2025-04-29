@@ -29,7 +29,9 @@ func CreateMedicalRecord(c *gin.Context) {
 
 	// Mapea a modelo MedicalRecord y usa la variable birthDate
 	medical_record := models.MedicalRecord{
-		IDPatient:           medical_recordDTO.IDPatient,
+		IDPatient: medical_recordDTO.IDPatient,
+		//IDConsultationVisit:     medical_recordDTO.IDConsultationVisit,
+		//IDTreatmentPrescription: medical_recordDTO.IDTreatmentPrescription,
 		PreviousDiagnoses:   medical_recordDTO.PreviousDiagnoses,
 		ChronicDiseases:     medical_recordDTO.ChronicDiseases,
 		Allergies:           medical_recordDTO.Allergies,
@@ -112,6 +114,8 @@ func UpdateMedicalRecord(c *gin.Context) {
 
 	// Actualizar solo los campos permitidos
 	existingMedicalRecord.IDPatient = medical_recordDTO.IDPatient
+	//existingMedicalRecord.IDConsultationVisit = medical_recordDTO.IDConsultationVisit
+	//existingMedicalRecord.IDTreatmentPrescription = medical_recordDTO.IDTreatmentPrescription
 	existingMedicalRecord.PreviousDiagnoses = medical_recordDTO.PreviousDiagnoses
 	existingMedicalRecord.ChronicDiseases = medical_recordDTO.ChronicDiseases
 	existingMedicalRecord.Allergies = medical_recordDTO.Allergies

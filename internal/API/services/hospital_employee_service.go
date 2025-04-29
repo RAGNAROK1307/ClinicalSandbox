@@ -56,13 +56,13 @@ func CreateHospitalEmployee(c *gin.Context) {
 
 	hospitalEmployeeResponse := response.HospitalEmployeeResponseDTO{
 		IDHospitalEmployee: hospital_employee.IDHospitalEmployee,
-		UserName:           hospital_employee.User.UserName,
-		RoleName:           hospital_employee.Role.RoleName,
-		FullName:           hospital_employee.FullName,
-		BirthDate:          hospital_employee.BirthDate,
-		Gender:             hospital_employee.Gender,
-		Address:            hospital_employee.Address,
-		Phone:              hospital_employee.Phone,
+		//UserName:           hospital_employee.User.UserName,
+		//RoleName:  hospital_employee.Role.RoleName,
+		FullName:  hospital_employee.FullName,
+		BirthDate: hospital_employee.BirthDate,
+		Gender:    hospital_employee.Gender,
+		Address:   hospital_employee.Address,
+		Phone:     hospital_employee.Phone,
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"user": hospitalEmployeeResponse})
@@ -88,13 +88,13 @@ func GetHospitalEmployees(c *gin.Context) {
 	for _, hospital_employee := range hospital_employees {
 		hospitalEmployeesResponse = append(hospitalEmployeesResponse, response.HospitalEmployeeResponseDTO{
 			IDHospitalEmployee: hospital_employee.IDHospitalEmployee,
-			UserName:           hospital_employee.User.UserName,
-			RoleName:           hospital_employee.Role.RoleName,
-			FullName:           hospital_employee.FullName,
-			BirthDate:          hospital_employee.BirthDate,
-			Gender:             hospital_employee.Gender,
-			Address:            hospital_employee.Address,
-			Phone:              hospital_employee.Phone,
+			//UserName:           hospital_employee.User.UserName,
+			//RoleName:  hospital_employee.Role.RoleName,
+			FullName:  hospital_employee.FullName,
+			BirthDate: hospital_employee.BirthDate,
+			Gender:    hospital_employee.Gender,
+			Address:   hospital_employee.Address,
+			Phone:     hospital_employee.Phone,
 		})
 	}
 
@@ -121,13 +121,13 @@ func GetHospitalEmployee(c *gin.Context) {
 
 	hospitalEmployeeResponse := response.HospitalEmployeeResponseDTO{
 		IDHospitalEmployee: hospital_employee.IDHospitalEmployee,
-		UserName:           hospital_employee.User.UserName,
-		RoleName:           hospital_employee.Role.RoleName,
-		FullName:           hospital_employee.FullName,
-		BirthDate:          hospital_employee.BirthDate,
-		Gender:             hospital_employee.Gender,
-		Address:            hospital_employee.Address,
-		Phone:              hospital_employee.Phone,
+		//UserName:           hospital_employee.User.UserName,
+		//RoleName:  hospital_employee.Role.RoleName,
+		FullName:  hospital_employee.FullName,
+		BirthDate: hospital_employee.BirthDate,
+		Gender:    hospital_employee.Gender,
+		Address:   hospital_employee.Address,
+		Phone:     hospital_employee.Phone,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"hospital_employee": hospitalEmployeeResponse})
@@ -188,13 +188,13 @@ func UpdateHospitalEmployee(c *gin.Context) {
 
 	hospitalEmployeeResponse := response.HospitalEmployeeResponseDTO{
 		IDHospitalEmployee: existingHospitalEmployee.IDHospitalEmployee,
-		UserName:           existingHospitalEmployee.User.UserName,
-		RoleName:           existingHospitalEmployee.Role.RoleName,
-		FullName:           existingHospitalEmployee.FullName,
-		BirthDate:          existingHospitalEmployee.BirthDate,
-		Gender:             existingHospitalEmployee.Gender,
-		Address:            existingHospitalEmployee.Address,
-		Phone:              existingHospitalEmployee.Phone,
+		//UserName:           existingHospitalEmployee.User.UserName,
+		//RoleName:  existingHospitalEmployee.Role.RoleName,
+		FullName:  existingHospitalEmployee.FullName,
+		BirthDate: existingHospitalEmployee.BirthDate,
+		Gender:    existingHospitalEmployee.Gender,
+		Address:   existingHospitalEmployee.Address,
+		Phone:     existingHospitalEmployee.Phone,
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"user": hospitalEmployeeResponse})

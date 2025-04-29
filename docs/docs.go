@@ -31,7 +31,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.ClinicalNote"
+                                "$ref": "#/definitions/response.ClinicalResponseNoteDTO"
                             }
                         }
                     }
@@ -64,7 +64,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.ClinicalNote"
+                            "$ref": "#/definitions/response.ClinicalResponseNoteDTO"
                         }
                     },
                     "400": {
@@ -81,18 +81,18 @@ const docTemplate = `{
         },
         "/clinical_notes/{id}": {
             "get": {
-                "description": "Retrieve a single clinical_note by its ID",
+                "description": "Retrieve a single clinical_note by its consultation ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "clinical_notes"
                 ],
-                "summary": "Get a clinical_note by ID",
+                "summary": "Get a clinical_note by consultation ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ClinicalNote ID",
+                        "description": "ConsultationVisit ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -102,7 +102,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ClinicalNote"
+                            "$ref": "#/definitions/response.ClinicalResponseNoteDTO"
                         }
                     },
                     "404": {
@@ -117,7 +117,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update the information of an existing clinical_note",
+                "description": "Update the information of an existing clinical_note by consultation ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -127,11 +127,11 @@ const docTemplate = `{
                 "tags": [
                     "clinical_notes"
                 ],
-                "summary": "Update a clinical_note",
+                "summary": "Update a clinical_note by consultation ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ClinicalNote ID",
+                        "description": "ConsultationVisit ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -150,7 +150,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ClinicalNote"
+                            "$ref": "#/definitions/response.ClinicalResponseNoteDTO"
                         }
                     },
                     "400": {
@@ -174,15 +174,15 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Remove a clinical_note by its ID",
+                "description": "Remove a clinical_note by its consultation ID",
                 "tags": [
                     "clinical_notes"
                 ],
-                "summary": "Delete a clinical_note",
+                "summary": "Delete a clinical_note by consultation ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ClinicalNote ID",
+                        "description": "ConsultationVisit ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -552,7 +552,7 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Remove a consultation_visit by its ID",
+                "description": "Remove a consultation_visit by its ID. Cannot delete if has related clinical notes, laboratories or diagnostic images.",
                 "tags": [
                     "consultation_visits"
                 ],
@@ -569,6 +569,15 @@ const docTemplate = `{
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     },
                     "404": {
                         "description": "Not Found",
@@ -787,7 +796,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.DiagnosticImage"
+                                "$ref": "#/definitions/response.DiagnosticImageResponseDTO"
                             }
                         }
                     }
@@ -820,7 +829,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.DiagnosticImage"
+                            "$ref": "#/definitions/response.DiagnosticImageResponseDTO"
                         }
                     },
                     "400": {
@@ -837,18 +846,18 @@ const docTemplate = `{
         },
         "/diagnostic_images/{id}": {
             "get": {
-                "description": "Retrieve a single diagnostic_image by its ID",
+                "description": "Retrieve a single diagnostic_image by its consultation ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "diagnostic_images"
                 ],
-                "summary": "Get a diagnostic_image by ID",
+                "summary": "Get a diagnostic_image by consultation ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "DiagnosticImage ID",
+                        "description": "ConsultationVisit ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -858,7 +867,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.DiagnosticImage"
+                            "$ref": "#/definitions/response.DiagnosticImageResponseDTO"
                         }
                     },
                     "404": {
@@ -873,7 +882,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update the information of an existing diagnostic_image",
+                "description": "Update the information of an existing diagnostic_image by consultation ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -883,11 +892,11 @@ const docTemplate = `{
                 "tags": [
                     "diagnostic_images"
                 ],
-                "summary": "Update a diagnostic_image",
+                "summary": "Update a diagnostic_image by consultation ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "DiagnosticImage ID",
+                        "description": "ConsultationVisit ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -906,7 +915,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.DiagnosticImage"
+                            "$ref": "#/definitions/response.DiagnosticImageResponseDTO"
                         }
                     },
                     "400": {
@@ -930,11 +939,201 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Remove a diagnostic_image by its ID",
+                "description": "Remove a diagnostic_image by its consultation ID",
                 "tags": [
                     "diagnostic_images"
                 ],
-                "summary": "Delete a diagnostic_image",
+                "summary": "Delete a diagnostic_image by consultation ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ConsultationVisit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/diagnostic_images/{id}/file": {
+            "get": {
+                "description": "Get the diagnostic image (base64 encoded)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "diagnostic_images"
+                ],
+                "summary": "Get diagnostic image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DiagnosticImage ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DiagnosticImageFileResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the diagnostic image (base64 encoded)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "diagnostic_images"
+                ],
+                "summary": "Update diagnostic image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DiagnosticImage ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Diagnostic image file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DiagnosticImageFileResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upload a diagnostic image file (stored as base64 in database)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "diagnostic_images"
+                ],
+                "summary": "Upload diagnostic image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "DiagnosticImage ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Diagnostic image file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.DiagnosticImageFileResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete the diagnostic image from database",
+                "tags": [
+                    "diagnostic_images"
+                ],
+                "summary": "Delete diagnostic image",
                 "parameters": [
                     {
                         "type": "string",
@@ -950,6 +1149,15 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -1139,8 +1347,26 @@ const docTemplate = `{
                     "204": {
                         "description": "No Content"
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -1736,7 +1962,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.Laboratory"
+                                "$ref": "#/definitions/response.LaboratoryResponseDTO"
                             }
                         }
                     }
@@ -1769,7 +1995,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Laboratory"
+                            "$ref": "#/definitions/response.LaboratoryResponseDTO"
                         }
                     },
                     "400": {
@@ -1786,18 +2012,18 @@ const docTemplate = `{
         },
         "/laboratories/{id}": {
             "get": {
-                "description": "Retrieve a single laboratory by its ID",
+                "description": "Retrieve a single laboratory by its consultation ID",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "laboratories"
                 ],
-                "summary": "Get a laboratory by ID",
+                "summary": "Get a laboratory by consultation ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Laboratory ID",
+                        "description": "ConsultationVisit ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1807,7 +2033,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Laboratory"
+                            "$ref": "#/definitions/response.LaboratoryResponseDTO"
                         }
                     },
                     "404": {
@@ -1822,7 +2048,7 @@ const docTemplate = `{
                 }
             },
             "put": {
-                "description": "Update the information of an existing laboratory",
+                "description": "Update the information of an existing laboratory by consultation ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -1832,11 +2058,11 @@ const docTemplate = `{
                 "tags": [
                     "laboratories"
                 ],
-                "summary": "Update a laboratory",
+                "summary": "Update a laboratory by consultation ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Laboratory ID",
+                        "description": "ConsultationVisit ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -1855,7 +2081,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Laboratory"
+                            "$ref": "#/definitions/response.LaboratoryResponseDTO"
                         }
                     },
                     "400": {
@@ -1879,11 +2105,192 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "description": "Remove a laboratory by its ID",
+                "description": "Remove a laboratory by its consultation ID",
                 "tags": [
                     "laboratories"
                 ],
-                "summary": "Delete a laboratory",
+                "summary": "Delete a laboratory by consultation ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ConsultationVisit ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/laboratories/{id}/file": {
+            "get": {
+                "description": "Get the laboratory file (base64 encoded)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "laboratories"
+                ],
+                "summary": "Get laboratory file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Laboratory ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.LaboratoryFileResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the laboratory file (base64 encoded)",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "laboratories"
+                ],
+                "summary": "Update laboratory file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Laboratory ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Laboratory file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.LaboratoryFileResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upload a file (PDF, image, etc.) for a laboratory result",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "laboratories"
+                ],
+                "summary": "Upload laboratory file",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Laboratory ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Laboratory file",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.LaboratoryFileResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete the laboratory file from database",
+                "tags": [
+                    "laboratories"
+                ],
+                "summary": "Delete laboratory file",
                 "parameters": [
                     {
                         "type": "string",
@@ -1899,6 +2306,364 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/medical-records-and-related": {
+            "get": {
+                "description": "Retrieve a list of all medical records with their related treatment prescriptions and consultation visits",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "List all medical records and related data",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.MedicalRecordAndRelatedResponseDTO"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Adds a new medical_record, treatment_prescription, and consultation_visit to the system in a single transaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Create a new medical_record, treatment_prescription, and consultation_visit",
+                "parameters": [
+                    {
+                        "description": "MedicalRecord, TreatmentPrescription, and ConsultationVisit data",
+                        "name": "medical_record_and_related",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.CreateMedicalRecordAndRelatedDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/response.MedicalRecordAndRelatedResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/medical-records-and-related/{id}": {
+            "get": {
+                "description": "Retrieve a single medical record with its related treatment prescription and consultation visit by patient ID",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Get a medical record and related data by patient ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Patient ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.MedicalRecordAndRelatedResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update the information of an existing medical_record",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Update a medical_record",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Patient ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Updated medical_record data",
+                        "name": "medical_record",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdateMedicalRecordDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MedicalRecord"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/medical-records/{id}/image": {
+            "get": {
+                "description": "Get a patient image from medical records",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Get patient image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Patient ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.MedicalRecordImageResponseDTO"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update a patient image in medical records",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Update patient image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Patient ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Patient image",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.MedicalRecordImageResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Upload a patient image for medical records",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Upload patient image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Patient ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "file",
+                        "description": "Patient image",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/response.MedicalRecordImageResponseDTO"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a patient image from medical records",
+                "tags": [
+                    "medical_records"
+                ],
+                "summary": "Delete patient image",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Patient ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -2842,8 +3607,26 @@ const docTemplate = `{
                     "204": {
                         "description": "No Content"
                     },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
                     "404": {
                         "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -3047,26 +3830,170 @@ const docTemplate = `{
                     }
                 }
             }
-        }
-    },
-    "definitions": {
-        "models.ClinicalNote": {
-            "type": "object",
-            "properties": {
-                "consultationVisit": {
-                    "$ref": "#/definitions/models.ConsultationVisit"
-                },
-                "id_consulta": {
-                    "type": "integer"
-                },
-                "notas_progreso": {
-                    "type": "string"
-                },
-                "observaciones_recomendaciones": {
-                    "type": "string"
+        },
+        "/users/{id}/password": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Updates user password after verifying current password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Update user password",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Password data",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.UpdatePasswordDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
                 }
             }
         },
+        "/users/{id}/passwords": {
+            "put": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Admin updates any user password without current password (admin only)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Admin updates user password",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "New password",
+                        "name": "password",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/request.AdminUpdatePasswordDTO"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
         "models.ConsentAuthorization": {
             "type": "object",
             "properties": {
@@ -3136,32 +4063,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.DiagnosticImage": {
-            "type": "object",
-            "properties": {
-                "consultationVisit": {
-                    "$ref": "#/definitions/models.ConsultationVisit"
-                },
-                "descripcion": {
-                    "type": "string"
-                },
-                "fecha_imagen": {
-                    "type": "string"
-                },
-                "id_consulta": {
-                    "type": "integer"
-                },
-                "interpretacion_imagen": {
-                    "type": "string"
-                },
-                "ruta_archivo_externo": {
-                    "type": "string"
-                },
-                "tipo_imagen": {
-                    "type": "string"
-                }
-            }
-        },
         "models.HospitalEmployee": {
             "type": "object",
             "properties": {
@@ -3217,29 +4118,6 @@ const docTemplate = `{
                 }
             }
         },
-        "models.Laboratory": {
-            "type": "object",
-            "properties": {
-                "consultationVisit": {
-                    "$ref": "#/definitions/models.ConsultationVisit"
-                },
-                "fecha_prueba": {
-                    "type": "string"
-                },
-                "id_consulta": {
-                    "type": "integer"
-                },
-                "resultados_prueba": {
-                    "type": "string"
-                },
-                "ruta_archivo_externo": {
-                    "type": "string"
-                },
-                "tipo_prueba": {
-                    "type": "string"
-                }
-            }
-        },
         "models.MedicalRecord": {
             "type": "object",
             "properties": {
@@ -3248,6 +4126,13 @@ const docTemplate = `{
                 },
                 "antecedentes_familiares": {
                     "type": "string"
+                },
+                "consultationVisits": {
+                    "description": "Relación uno a muchos",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ConsultationVisit"
+                    }
                 },
                 "diagnosticos_previos": {
                     "type": "string"
@@ -3268,11 +4153,21 @@ const docTemplate = `{
                     "description": "Llave foránea que referencia la tabla roles",
                     "type": "integer"
                 },
+                "imagen_paciente": {
+                    "type": "string"
+                },
                 "medicamentos_actuales": {
                     "type": "string"
                 },
                 "patient": {
                     "$ref": "#/definitions/models.Patient"
+                },
+                "treatmentPrescriptions": {
+                    "description": "Relación uno a muchos",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.TreatmentPrescription"
+                    }
                 }
             }
         },
@@ -3389,6 +4284,18 @@ const docTemplate = `{
                 }
             }
         },
+        "request.AdminUpdatePasswordDTO": {
+            "type": "object",
+            "required": [
+                "new_password"
+            ],
+            "properties": {
+                "new_password": {
+                    "type": "string",
+                    "minLength": 8
+                }
+            }
+        },
         "request.CreateClinicalNoteDTO": {
             "type": "object",
             "required": [
@@ -3497,7 +4404,6 @@ const docTemplate = `{
                 "fecha_imagen",
                 "id_consulta",
                 "interpretacion_imagen",
-                "ruta_archivo_externo",
                 "tipo_imagen"
             ],
             "properties": {
@@ -3512,9 +4418,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "interpretacion_imagen": {
-                    "type": "string"
-                },
-                "ruta_archivo_externo": {
                     "type": "string"
                 },
                 "tipo_imagen": {
@@ -3630,7 +4533,6 @@ const docTemplate = `{
                 "fecha_prueba",
                 "id_consulta",
                 "resultados_prueba",
-                "ruta_archivo_externo",
                 "tipo_prueba"
             ],
             "properties": {
@@ -3644,10 +4546,73 @@ const docTemplate = `{
                 "resultados_prueba": {
                     "type": "string"
                 },
-                "ruta_archivo_externo": {
+                "tipo_prueba": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.CreateMedicalRecordAndRelatedDTO": {
+            "type": "object",
+            "required": [
+                "fecha_hora_visita",
+                "id_empleado_hospital",
+                "id_paciente",
+                "motivo_visita"
+            ],
+            "properties": {
+                "alergias": {
                     "type": "string"
                 },
-                "tipo_prueba": {
+                "antecedentes_familiares": {
+                    "type": "string"
+                },
+                "cantidad": {
+                    "type": "string"
+                },
+                "diagnosticos_previos": {
+                    "description": "PatientImage       string ` + "`" + `json:\"imagen_paciente\" binding:\"required\"` + "`" + `",
+                    "type": "string"
+                },
+                "duracion_tratamiento": {
+                    "type": "string"
+                },
+                "enfermedades_cronicas": {
+                    "type": "string"
+                },
+                "fecha_hora_visita": {
+                    "type": "string"
+                },
+                "frecuencia": {
+                    "type": "string"
+                },
+                "historial_cirugias": {
+                    "type": "string"
+                },
+                "id_empleado_hospital": {
+                    "description": "Campos para ConsultationVisit",
+                    "type": "integer"
+                },
+                "id_paciente": {
+                    "description": "Campos para MedicalRecord",
+                    "type": "integer"
+                },
+                "instrucciones": {
+                    "type": "string"
+                },
+                "medicamento_prescrito": {
+                    "description": "Campos para TreatmentPrescription",
+                    "type": "string"
+                },
+                "medicamentos_actuales": {
+                    "type": "string"
+                },
+                "motivo_visita": {
+                    "type": "string"
+                },
+                "notas_medicas": {
+                    "type": "string"
+                },
+                "resultados_examenes": {
                     "type": "string"
                 }
             }
@@ -3663,6 +4628,7 @@ const docTemplate = `{
                 "fecha_creacion_historial",
                 "historial_cirugias",
                 "id_paciente",
+                "imagen_paciente",
                 "medicamentos_actuales"
             ],
             "properties": {
@@ -3690,6 +4656,10 @@ const docTemplate = `{
                 "id_paciente": {
                     "description": "ID del rol asociado, requerido",
                     "type": "integer"
+                },
+                "imagen_paciente": {
+                    "description": "IDConsultationVisit     uint      ` + "`" + `json:\"id_consulta\" binding:\"required\"` + "`" + `\nIDTreatmentPrescription uint      ` + "`" + `json:\"id_tratamiento\" binding:\"required\"` + "`" + `",
+                    "type": "string"
                 },
                 "medicamentos_actuales": {
                     "type": "string"
@@ -3909,6 +4879,51 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateMedicalRecordDTO": {
+            "type": "object",
+            "properties": {
+                "alergias": {
+                    "type": "string"
+                },
+                "antecedentes_familiares": {
+                    "type": "string"
+                },
+                "diagnosticos_previos": {
+                    "type": "string"
+                },
+                "enfermedades_cronicas": {
+                    "type": "string"
+                },
+                "fecha_actualizacion_historial": {
+                    "type": "string"
+                },
+                "fecha_creacion_historial": {
+                    "type": "string"
+                },
+                "historial_cirugias": {
+                    "type": "string"
+                },
+                "medicamentos_actuales": {
+                    "type": "string"
+                }
+            }
+        },
+        "request.UpdatePasswordDTO": {
+            "type": "object",
+            "required": [
+                "current_password",
+                "new_password"
+            ],
+            "properties": {
+                "current_password": {
+                    "type": "string"
+                },
+                "new_password": {
+                    "type": "string",
+                    "minLength": 8
+                }
+            }
+        },
         "request.UpdateUserAndPatientDTO": {
             "type": "object",
             "properties": {
@@ -3955,6 +4970,49 @@ const docTemplate = `{
                 }
             }
         },
+        "response.ClinicalResponseNoteDTO": {
+            "type": "object",
+            "properties": {
+                "id_consulta": {
+                    "type": "integer"
+                },
+                "notas_progreso": {
+                    "type": "string"
+                },
+                "observaciones_recomendaciones": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ConsultationVisitResponseDTO": {
+            "type": "object",
+            "properties": {
+                "fecha_hora_visita": {
+                    "type": "string"
+                },
+                "hospital_employee_full_name": {
+                    "type": "string"
+                },
+                "id_consulta": {
+                    "type": "integer"
+                },
+                "id_paciente": {
+                    "type": "integer"
+                },
+                "id_personal_hospital": {
+                    "type": "integer"
+                },
+                "notas_medicas": {
+                    "type": "string"
+                },
+                "razon_visita": {
+                    "type": "string"
+                },
+                "resultados_examenes": {
+                    "type": "string"
+                }
+            }
+        },
         "response.DemographicDataResponseDTO": {
             "type": "object",
             "properties": {
@@ -3971,6 +5029,46 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "nacionalidad": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.DiagnosticImageFileResponseDTO": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "description": "Imagen en base64",
+                    "type": "string"
+                },
+                "mime_type": {
+                    "description": "Tipo MIME de la imagen",
+                    "type": "string"
+                }
+            }
+        },
+        "response.DiagnosticImageResponseDTO": {
+            "type": "object",
+            "properties": {
+                "descripcion": {
+                    "type": "string"
+                },
+                "fecha_imagen": {
+                    "type": "string",
+                    "example": "2025-01-20"
+                },
+                "id_consulta": {
+                    "type": "integer"
+                },
+                "id_imagen": {
+                    "type": "integer"
+                },
+                "interpretacion_imagen": {
+                    "type": "string"
+                },
+                "ruta_archivo_externo": {
+                    "type": "string"
+                },
+                "tipo_imagen": {
                     "type": "string"
                 }
             }
@@ -4007,12 +5105,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "nombre_completo": {
-                    "type": "string"
-                },
-                "nombre_rol": {
-                    "type": "string"
-                },
-                "nombre_usuario": {
+                    "description": "UserName           string    ` + "`" + `json:\"nombre_usuario\"` + "`" + `\nRoleName  string    ` + "`" + `json:\"nombre_rol\"` + "`" + `",
                     "type": "string"
                 },
                 "telefono": {
@@ -4034,13 +5127,122 @@ const docTemplate = `{
                 }
             }
         },
+        "response.LaboratoryFileResponseDTO": {
+            "type": "object",
+            "properties": {
+                "file_content": {
+                    "description": "Contenido del archivo en base64",
+                    "type": "string"
+                },
+                "message": {
+                    "description": "Mensaje opcional",
+                    "type": "string"
+                },
+                "mime_type": {
+                    "description": "Tipo MIME del archivo (ej: \"image/jpeg\", \"application/pdf\")",
+                    "type": "string"
+                }
+            }
+        },
+        "response.LaboratoryResponseDTO": {
+            "type": "object",
+            "properties": {
+                "fecha_prueba": {
+                    "type": "string",
+                    "example": "2025-01-20"
+                },
+                "id_consulta": {
+                    "type": "integer"
+                },
+                "id_laboratorio": {
+                    "type": "integer"
+                },
+                "resultados_prueba": {
+                    "type": "string"
+                },
+                "ruta_archivo_externo": {
+                    "type": "string"
+                },
+                "tipo_prueba": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.MedicalRecordAndRelatedResponseDTO": {
+            "type": "object",
+            "properties": {
+                "consultation_visit": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.ConsultationVisitResponseDTO"
+                    }
+                },
+                "medical_record": {
+                    "$ref": "#/definitions/response.MedicalRecordResponseDTO"
+                },
+                "patient": {
+                    "$ref": "#/definitions/response.PatientResponseDTO"
+                },
+                "treatment_prescription": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/response.TreatmentPrescriptionResponseDTO"
+                    }
+                }
+            }
+        },
+        "response.MedicalRecordImageResponseDTO": {
+            "type": "object",
+            "properties": {
+                "image": {
+                    "type": "string"
+                },
+                "mime_type": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.MedicalRecordResponseDTO": {
+            "type": "object",
+            "properties": {
+                "alergias": {
+                    "type": "string"
+                },
+                "antecedentes_familiares": {
+                    "type": "string"
+                },
+                "diagnosticos_previos": {
+                    "type": "string"
+                },
+                "enfermedades_cronicas": {
+                    "type": "string"
+                },
+                "fecha_actualizacion_historial": {
+                    "type": "string"
+                },
+                "fecha_creacion_historial": {
+                    "type": "string"
+                },
+                "historial_cirugias": {
+                    "type": "string"
+                },
+                "id_paciente": {
+                    "description": "ID del rol asociado, requerido",
+                    "type": "integer"
+                },
+                "imagen_paciente": {
+                    "description": "IDConsultationVisit     uint      ` + "`" + `json:\"id_consulta\"` + "`" + `\nIDTreatmentPrescription uint      ` + "`" + `json:\"id_tratamiento\"` + "`" + `",
+                    "type": "string"
+                },
+                "medicamentos_actuales": {
+                    "type": "string"
+                }
+            }
+        },
         "response.PatientResponseDTO": {
             "type": "object",
             "properties": {
                 "direccion": {
-                    "type": "string"
-                },
-                "estado_civil": {
                     "type": "string"
                 },
                 "fecha_nacimiento": {
@@ -4054,25 +5256,7 @@ const docTemplate = `{
                     "description": "IDRole               uint   ` + "`" + `json:\"id_rol\" binding:\"required\"` + "`" + ` // ID del rol asociado, requerido\nIDIdentification     uint   ` + "`" + `json:\"id_identificacion\" binding:\"required\"` + "`" + `\nIDDemographicData    uint   ` + "`" + `json:\"id_datos_demograficos\" binding:\"required\"` + "`" + `\nIDUser               uint   ` + "`" + `json:\"id_usuarios\" binding:\"required\"` + "`" + `",
                     "type": "integer"
                 },
-                "informacion_etnica_racial": {
-                    "type": "string"
-                },
-                "informacion_laboral": {
-                    "type": "string"
-                },
-                "nacionalidad": {
-                    "type": "string"
-                },
                 "nombre_completo": {
-                    "type": "string"
-                },
-                "nombre_rol": {
-                    "type": "string"
-                },
-                "nombre_usuario": {
-                    "type": "string"
-                },
-                "numero_documento": {
                     "type": "string"
                 },
                 "numero_seguro_social": {
@@ -4080,8 +5264,31 @@ const docTemplate = `{
                 },
                 "telefono": {
                     "type": "string"
+                }
+            }
+        },
+        "response.TreatmentPrescriptionResponseDTO": {
+            "type": "object",
+            "properties": {
+                "dosis": {
+                    "type": "string"
                 },
-                "tipo_documento": {
+                "duracion_tratamiento": {
+                    "type": "string"
+                },
+                "frecuencia": {
+                    "type": "string"
+                },
+                "id_paciente": {
+                    "type": "integer"
+                },
+                "id_tratamiento": {
+                    "type": "integer"
+                },
+                "instrucciones": {
+                    "type": "string"
+                },
+                "medicamento_prescrito": {
                     "type": "string"
                 }
             }
@@ -4106,9 +5313,6 @@ const docTemplate = `{
         "response.UserResponseDTO": {
             "type": "object",
             "properties": {
-                "contraseña": {
-                    "type": "string"
-                },
                 "id_usuario": {
                     "description": "ID del usuario",
                     "type": "integer"
