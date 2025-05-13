@@ -471,6 +471,18 @@ func DeleteUserAndPatient(c *gin.Context) {
 		return
 	}
 
+	// Verificar si el paciente tiene consentimientos de autorización
+	var consentCount int64
+	if err := db.DB.Model(&models.ConsentAuthorization{}).Where("id_paciente = ?", id).Count(&consentCount).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to check consent authorizations"})
+		return
+	}
+
+	if consentCount > 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete patient because it has associated Consent Authorizations"})
+		return
+	}
+
 	// Iniciar una transacción
 	tx := db.DB.Begin()
 	if tx.Error != nil {
@@ -481,8 +493,9 @@ func DeleteUserAndPatient(c *gin.Context) {
 	// Eliminar el paciente
 	if err := tx.Delete(&patient).Error; err != nil {
 		tx.Rollback()
-		// Manejar específicamente el error de llave foránea por si acaso
-		if strings.Contains(err.Error(), "violates foreign key constraint") {
+		// Manejar específicamente el error de llave foránea
+		if strings.Contains(err.Error(), "violates foreign key constraint") ||
+			strings.Contains(err.Error(), "viola la llave foránea") {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Cannot delete patient because it has associated records"})
 		} else {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete patient"})

@@ -17,6 +17,7 @@ import (
 // @Param consultation_visit body request.CreateConsultationVisitDTO true "ConsultationVisit data"
 // @Success 201 {object} models.ConsultationVisit
 // @Failure 400 {object} map[string]string
+// @Failure 403 {object} map[string]string
 // @Router /consultation_visits [post]
 func CreateConsultationVisit(c *gin.Context) {
 	var consultation_visitDTO request.CreateConsultationVisitDTO
@@ -27,7 +28,20 @@ func CreateConsultationVisit(c *gin.Context) {
 		return
 	}
 
-	// Mapea a modelo ConsultationVisit y usa la variable birthDate
+	// Verificar que el IDHospitalEmployee pertenece a un médico
+	var hospitalEmployee models.HospitalEmployee
+	if err := db.DB.Preload("User.Role").First(&hospitalEmployee, consultation_visitDTO.IDHospitalEmployee).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Hospital employee not found"})
+		return
+	}
+
+	// Verificar el rol del empleado
+	if hospitalEmployee.User.Role.RoleName != "Médico" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Only medical staff can create consultation visits"})
+		return
+	}
+
+	// Mapea a modelo ConsultationVisit
 	consultation_visit := models.ConsultationVisit{
 		IDPatient:          consultation_visitDTO.IDPatient,
 		IDHospitalEmployee: consultation_visitDTO.IDHospitalEmployee,
@@ -88,13 +102,14 @@ func GetConsultationVisit(c *gin.Context) {
 // @Param consultation_visit body request.CreateConsultationVisitDTO true "Updated consultation_visit data"
 // @Success 200 {object} models.ConsultationVisit
 // @Failure 400 {object} map[string]string
+// @Failure 403 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Router /consultation_visits/{id} [put]
 func UpdateConsultationVisit(c *gin.Context) {
 	id := c.Param("id")
 	var existingConsultationVisit models.ConsultationVisit
 
-	// Verificar que el usuario existe en la base de datos
+	// Verificar que la consulta existe en la base de datos
 	if err := db.DB.First(&existingConsultationVisit, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ConsultationVisit not found"})
 		return
@@ -104,6 +119,19 @@ func UpdateConsultationVisit(c *gin.Context) {
 	var consultation_visitDTO request.CreateConsultationVisitDTO
 	if err := c.ShouldBindJSON(&consultation_visitDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	// Verificar que el IDHospitalEmployee pertenece a un médico
+	var hospitalEmployee models.HospitalEmployee
+	if err := db.DB.Preload("User.Role").First(&hospitalEmployee, consultation_visitDTO.IDHospitalEmployee).Error; err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Hospital employee not found"})
+		return
+	}
+
+	// Verificar el rol del empleado
+	if hospitalEmployee.User.Role.RoleName != "Médico" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Only medical staff can be assigned to consultation visits"})
 		return
 	}
 
