@@ -3,6 +3,7 @@ package services
 import (
 	"ClinicalSandBox/configs/db"
 	"ClinicalSandBox/internal/API/dto/request"
+	"ClinicalSandBox/internal/API/dto/response"
 	"ClinicalSandBox/internal/API/models"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -16,7 +17,7 @@ import (
 // @Accept json
 // @Produce json
 // @Param consent_authorization body request.CreateConsentAuthorizationDTO true "ConsentAuthorization data"
-// @Success 201 {object} models.ConsentAuthorization
+// @Success 201 {object} response.ConsentAuthorizationResponseDTO
 // @Failure 400 {object} map[string]string
 // @Router /consent_authorizations [post]
 func CreateConsentAuthorization(c *gin.Context) {
@@ -35,13 +36,12 @@ func CreateConsentAuthorization(c *gin.Context) {
 		return
 	}
 
-	// Mapea a modelo ConsentAuthorization y usa la variable birthDate
+	// Mapea a modelo ConsentAuthorization
 	consent_authorization := models.ConsentAuthorization{
-		IDPatient:        consent_authorizationDTO.IDPatient,
-		ConsentType:      consent_authorizationDTO.ConsentType,
-		ConsentDate:      consentDate, // Aquí estamos usando la variable consentDate
-		Details:          consent_authorizationDTO.Details,
-		ExternalFilePath: consent_authorizationDTO.ExternalFilePath,
+		IDPatient:   consent_authorizationDTO.IDPatient,
+		ConsentType: consent_authorizationDTO.ConsentType,
+		ConsentDate: consentDate,
+		Details:     consent_authorizationDTO.Details,
 	}
 
 	// Guarda el nuevo consent_authorization en la base de datos
@@ -50,7 +50,15 @@ func CreateConsentAuthorization(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"consent_authorization": consent_authorization})
+	// Mapear a DTO de respuesta
+	responseDTO := response.ConsentAuthorizationResponseDTO{
+		IDConsentAuthorization: consent_authorization.IDConsentAuthorization,
+		ConsentType:            consent_authorization.ConsentType,
+		ConsentDate:            consent_authorization.ConsentDate.Format("2006-01-02"),
+		Details:                consent_authorization.Details,
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"consent_authorization": responseDTO})
 }
 
 // GetConsentAuthorizations godoc
@@ -58,31 +66,62 @@ func CreateConsentAuthorization(c *gin.Context) {
 // @Description Retrieve a list of all consent_authorizations in the system
 // @Tags consent_authorizations
 // @Produce json
-// @Success 200 {array} models.ConsentAuthorization
+// @Success 200 {array} response.ConsentAuthorizationResponseDTO
 // @Router /consent_authorizations [get]
 func GetConsentAuthorizations(c *gin.Context) {
 	var consent_authorizations []models.ConsentAuthorization
 	db.DB.Preload("Patient").Find(&consent_authorizations)
-	c.JSON(http.StatusOK, gin.H{"consent_authorizations": consent_authorizations})
+
+	// Mapear a DTOs de respuesta
+	var responseDTOs []response.ConsentAuthorizationResponseDTO
+	for _, ca := range consent_authorizations {
+		responseDTOs = append(responseDTOs, response.ConsentAuthorizationResponseDTO{
+			IDConsentAuthorization: ca.IDConsentAuthorization,
+			ConsentType:            ca.ConsentType,
+			ConsentDate:            ca.ConsentDate.Format("2006-01-02"),
+			Details:                ca.Details,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"consent_authorizations": responseDTOs})
 }
 
 // GetConsentAuthorization godoc
-// @Summary Get a consent_authorization by ID
-// @Description Retrieve a single consent_authorization by its ID
+// @Summary Get consent_authorizations by patient ID
+// @Description Retrieve consent_authorizations for a specific patient
 // @Tags consent_authorizations
-// @Param id path string true "ConsentAuthorization ID"
+// @Param id path string true "Patient ID"
 // @Produce json
-// @Success 200 {object} models.ConsentAuthorization
+// @Success 200 {array} response.ConsentAuthorizationResponseDTO
 // @Failure 404 {object} map[string]string
 // @Router /consent_authorizations/{id} [get]
 func GetConsentAuthorization(c *gin.Context) {
-	id := c.Param("id")
-	var consent_authorization models.ConsentAuthorization
-	if err := db.DB.Preload("Patient").First(&consent_authorization, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "ConsentAuthorization not found"})
+	idPatient := c.Param("id")
+	if idPatient == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Patient ID is required"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"consent_authorization": consent_authorization})
+
+	var consent_authorizations []models.ConsentAuthorization
+
+	// Usar el nombre del campo exacto como está en el modelo (probablemente IDPatient)
+	if err := db.DB.Preload("Patient").Where("id_paciente = ?", idPatient).Find(&consent_authorizations).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "No consent authorizations found for this patient"})
+		return
+	}
+
+	// Mapear a DTOs de respuesta
+	var responseDTOs []response.ConsentAuthorizationResponseDTO
+	for _, ca := range consent_authorizations {
+		responseDTOs = append(responseDTOs, response.ConsentAuthorizationResponseDTO{
+			IDConsentAuthorization: ca.IDConsentAuthorization,
+			ConsentType:            ca.ConsentType,
+			ConsentDate:            ca.ConsentDate.Format("2006-01-02"),
+			Details:                ca.Details,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"consent_authorizations": responseDTOs})
 }
 
 // UpdateConsentAuthorization godoc
@@ -92,29 +131,30 @@ func GetConsentAuthorization(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path string true "ConsentAuthorization ID"
-// @Param consent_authorization body request.CreateConsentAuthorizationDTO true "Updated consent_authorization data"
-// @Success 200 {object} models.ConsentAuthorization
+// @Param consent_authorization body request.UpdateConsentAuthorizationDTO true "Updated consent_authorization data"
+// @Success 200 {object} response.ConsentAuthorizationResponseDTO
 // @Failure 400 {object} map[string]string
 // @Failure 404 {object} map[string]string
 // @Router /consent_authorizations/{id} [put]
 func UpdateConsentAuthorization(c *gin.Context) {
 	id := c.Param("id")
-	var existingConsentAuthorization models.ConsentAuthorization
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ConsentAuthorization ID is required"})
+		return
+	}
 
-	// Verificar que el usuario existe en la base de datos
+	var existingConsentAuthorization models.ConsentAuthorization
 	if err := db.DB.First(&existingConsentAuthorization, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ConsentAuthorization not found"})
 		return
 	}
 
-	// Bind JSON al DTO para validar los datos
-	var consent_authorizationDTO request.CreateConsentAuthorizationDTO
+	var consent_authorizationDTO request.UpdateConsentAuthorizationDTO
 	if err := c.ShouldBindJSON(&consent_authorizationDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
-	// Convertir la fecha en formato string a time.Time
 	consentDate, err := time.Parse("2006-01-02", consent_authorizationDTO.ConsentDate)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid date format. Use YYYY-MM-DD"})
@@ -122,19 +162,23 @@ func UpdateConsentAuthorization(c *gin.Context) {
 	}
 
 	// Actualizar solo los campos permitidos
-	existingConsentAuthorization.IDPatient = consent_authorizationDTO.IDPatient
 	existingConsentAuthorization.ConsentType = consent_authorizationDTO.ConsentType
-	existingConsentAuthorization.ConsentDate = consentDate // Usar la fecha convertida
+	existingConsentAuthorization.ConsentDate = consentDate
 	existingConsentAuthorization.Details = consent_authorizationDTO.Details
-	existingConsentAuthorization.ExternalFilePath = consent_authorizationDTO.ExternalFilePath
 
-	// Guardar los cambios en la base de datos
 	if err := db.DB.Save(&existingConsentAuthorization).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update consent_authorization"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"consent_authorization": existingConsentAuthorization})
+	responseDTO := response.ConsentAuthorizationResponseDTO{
+		IDConsentAuthorization: existingConsentAuthorization.IDConsentAuthorization,
+		ConsentType:            existingConsentAuthorization.ConsentType,
+		ConsentDate:            existingConsentAuthorization.ConsentDate.Format("2006-01-02"),
+		Details:                existingConsentAuthorization.Details,
+	}
+
+	c.JSON(http.StatusOK, gin.H{"consent_authorization": responseDTO})
 }
 
 // DeleteConsentAuthorization godoc
@@ -147,9 +191,15 @@ func UpdateConsentAuthorization(c *gin.Context) {
 // @Router /consent_authorizations/{id} [delete]
 func DeleteConsentAuthorization(c *gin.Context) {
 	id := c.Param("id")
+	if id == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "ConsentAuthorization ID is required"})
+		return
+	}
+
 	if err := db.DB.Delete(&models.ConsentAuthorization{}, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "ConsentAuthorization not found"})
 		return
 	}
+
 	c.JSON(http.StatusNoContent, nil)
 }

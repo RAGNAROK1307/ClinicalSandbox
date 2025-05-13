@@ -16,16 +16,8 @@ var (
 	jwtKey          = []byte("Simclec")
 	activeSessions  = make(map[uint]time.Time)
 	sessionMutex    = &sync.Mutex{}
-	sessionDuration = 5 * time.Minute
+	sessionDuration = 2 * time.Minute
 )
-
-/*type Claims struct {
-	UserID   uint   `json:"user_id"`
-	RoleID   uint   `json:"role_id"`
-	UserName string `json:"user_name"`
-	RoleName string `json:"role_name"`
-	jwt.StandardClaims
-}*/
 
 type Claims struct {
 	UserID           uint   `json:"user_id"`
@@ -37,21 +29,6 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-/*func GenerateToken(userID uint, roleID uint, userName string, roleName string) (string, error) {
-	claims := &Claims{
-		UserID:   userID,
-		RoleID:   roleID,
-		UserName: userName,
-		RoleName: roleName,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Hour * 24).Unix(), // Expira en 24 horas
-		},
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(jwtKey)
-}*/
-
 func GenerateToken(userID uint, roleID uint, userName string, roleName string, hospitalEmployeeID uint, patientID uint) (string, error) {
 	claims := &Claims{
 		UserID:           userID,
@@ -61,7 +38,7 @@ func GenerateToken(userID uint, roleID uint, userName string, roleName string, h
 		HospitalEmployee: hospitalEmployeeID,
 		Patient:          patientID,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(sessionDuration).Unix(), // Expira en 5 minutos
+			ExpiresAt: time.Now().Add(sessionDuration).Unix(),
 		},
 	}
 
@@ -74,6 +51,77 @@ func GenerateToken(userID uint, roleID uint, userName string, roleName string, h
 
 	return token.SignedString(jwtKey)
 }
+
+/*func AuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
+			c.Abort()
+			return
+		}
+
+		tokenString := strings.Split(authHeader, " ")[1]
+		claims := &Claims{}
+
+		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
+			return jwtKey, nil
+		})
+
+		if err != nil || !token.Valid {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.Abort()
+			return
+		}
+
+		// Verificar si el token está a punto de expirar (por ejemplo, en menos de 1 minuto)
+		timeLeft := time.Unix(claims.ExpiresAt, 0).Sub(time.Now())
+		shouldRenew := timeLeft < time.Minute
+
+		// Si necesita renovación, generar nuevo token
+		if shouldRenew {
+			newToken, err := GenerateToken(
+				claims.UserID,
+				claims.RoleID,
+				claims.UserName,
+				claims.RoleName,
+				claims.HospitalEmployee,
+				claims.Patient,
+			)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to renew token"})
+				c.Abort()
+				return
+			}
+
+			// Agregar el nuevo token a la respuesta
+			c.Header("X-Renewed-Token", newToken)
+		}
+
+		// Actualizar tiempo de última actividad
+		sessionMutex.Lock()
+		activeSessions[claims.UserID] = time.Now()
+		sessionMutex.Unlock()
+
+		// Resto del middleware
+		var user models.User
+		if err := db.DB.First(&user, claims.UserID).Error; err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
+			c.Abort()
+			return
+		}
+
+		c.Set("claims", claims)
+		c.Set("user", user)
+		c.Set("user_id", claims.UserID)
+		c.Set("user_name", claims.UserName)
+		c.Set("role_name", claims.RoleName)
+		c.Set("hospital_employee_id", claims.HospitalEmployee)
+		c.Set("patient_id", claims.Patient)
+
+		c.Next()
+	}
+}*/
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -97,23 +145,39 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Verificar actividad reciente
-		sessionMutex.Lock()
-		lastActivity, exists := activeSessions[claims.UserID]
-		sessionMutex.Unlock()
+		// Verificar si el token está a punto de expirar (por ejemplo, en menos de 1 minuto)
+		timeLeft := time.Unix(claims.ExpiresAt, 0).Sub(time.Now())
+		shouldRenew := timeLeft < time.Minute
 
-		if !exists || time.Since(lastActivity) > sessionDuration {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Session expired due to inactivity"})
-			c.Abort()
-			return
+		// Si necesita renovación, generar nuevo token
+		if shouldRenew {
+			newToken, err := GenerateToken(
+				claims.UserID,
+				claims.RoleID,
+				claims.UserName,
+				claims.RoleName,
+				claims.HospitalEmployee,
+				claims.Patient,
+			)
+			if err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to renew token"})
+				c.Abort()
+				return
+			}
+
+			// Agregar el nuevo token a la respuesta
+			c.Header("X-Renewed-Token", newToken)
 		}
+
+		// Exponer el header X-Renewed-Token al cliente
+		c.Header("Access-Control-Expose-Headers", "X-Renewed-Token")
 
 		// Actualizar tiempo de última actividad
 		sessionMutex.Lock()
 		activeSessions[claims.UserID] = time.Now()
 		sessionMutex.Unlock()
 
-		// Resto del middleware (sin cambios)
+		// Resto del middleware
 		var user models.User
 		if err := db.DB.First(&user, claims.UserID).Error; err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
@@ -162,60 +226,6 @@ func RoleMiddleware(allowedRoles ...uint) gin.HandlerFunc {
 	}
 }
 
-/*
-	func ValidateUserAccess() gin.HandlerFunc {
-		return func(c *gin.Context) {
-			// Obtener los claims del contexto
-			claimsInterface, exists := c.Get("claims")
-			if !exists {
-				c.JSON(http.StatusUnauthorized, gin.H{"error": "Claims not found"})
-				c.Abort()
-				return
-			}
-
-			// Convertir los claims a la estructura Claims
-			claims, ok := claimsInterface.(*Claims)
-			if !ok {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid claims format"})
-				c.Abort()
-				return
-			}
-
-			// Obtener el ID de la ruta y convertirlo a uint
-			requestedIDStr := c.Param("id")
-			requestedID, err := strconv.ParseUint(requestedIDStr, 10, 64)
-			if err != nil {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
-				c.Abort()
-				return
-			}
-
-			// Verificar el acceso según el rol
-			switch claims.RoleName {
-			case "Médico", "Directivo":
-				// Para médicos y directivos, verificar el ID del personal hospitalario
-				if uint(requestedID) != claims.HospitalEmployee {
-					c.JSON(http.StatusForbidden, gin.H{"error": "You can only access your own information"})
-					c.Abort()
-					return
-				}
-			case "Paciente":
-				// Para pacientes, verificar el ID del paciente
-				if uint(requestedID) != claims.Patient {
-					c.JSON(http.StatusForbidden, gin.H{"error": "You can only access your own information"})
-					c.Abort()
-					return
-				}
-			default:
-				c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions"})
-				c.Abort()
-				return
-			}
-
-			c.Next()
-		}
-	}
-*/
 func ValidateUserAccess() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Obtener los claims del contexto

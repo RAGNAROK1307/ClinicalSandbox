@@ -259,7 +259,7 @@ func UpdatePassword(c *gin.Context) {
 
 	// Verificar contraseña actual
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(passwordDTO.CurrentPassword)); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Contraseña actual incorrecta"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Contraseña actual incorrecta"})
 		return
 	}
 

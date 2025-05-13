@@ -220,7 +220,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/models.ConsentAuthorization"
+                                "$ref": "#/definitions/response.ConsentAuthorizationResponseDTO"
                             }
                         }
                     }
@@ -253,7 +253,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.ConsentAuthorization"
+                            "$ref": "#/definitions/response.ConsentAuthorizationResponseDTO"
                         }
                     },
                     "400": {
@@ -270,18 +270,18 @@ const docTemplate = `{
         },
         "/consent_authorizations/{id}": {
             "get": {
-                "description": "Retrieve a single consent_authorization by its ID",
+                "description": "Retrieve consent_authorizations for a specific patient",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
                     "consent_authorizations"
                 ],
-                "summary": "Get a consent_authorization by ID",
+                "summary": "Get consent_authorizations by patient ID",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "ConsentAuthorization ID",
+                        "description": "Patient ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -291,7 +291,10 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ConsentAuthorization"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/response.ConsentAuthorizationResponseDTO"
+                            }
                         }
                     },
                     "404": {
@@ -331,7 +334,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/request.CreateConsentAuthorizationDTO"
+                            "$ref": "#/definitions/request.UpdateConsentAuthorizationDTO"
                         }
                     }
                 ],
@@ -339,7 +342,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.ConsentAuthorization"
+                            "$ref": "#/definitions/response.ConsentAuthorizationResponseDTO"
                         }
                     },
                     "400": {
@@ -453,6 +456,15 @@ const docTemplate = `{
                                 "type": "string"
                             }
                         }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
                     }
                 }
             }
@@ -533,6 +545,15 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -3994,29 +4015,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.ConsentAuthorization": {
-            "type": "object",
-            "properties": {
-                "detalles": {
-                    "type": "string"
-                },
-                "fecha_consentimiento": {
-                    "type": "string"
-                },
-                "id_paciente": {
-                    "type": "integer"
-                },
-                "patient": {
-                    "$ref": "#/definitions/models.Patient"
-                },
-                "ruta_archivo_externo": {
-                    "type": "string"
-                },
-                "tipo_consentimiento": {
-                    "type": "string"
-                }
-            }
-        },
         "models.ConsultationVisit": {
             "type": "object",
             "properties": {
@@ -4321,7 +4319,6 @@ const docTemplate = `{
                 "detalles",
                 "fecha_consentimiento",
                 "id_paciente",
-                "ruta_archivo_externo",
                 "tipo_consentimiento"
             ],
             "properties": {
@@ -4334,9 +4331,6 @@ const docTemplate = `{
                 },
                 "id_paciente": {
                     "type": "integer"
-                },
-                "ruta_archivo_externo": {
-                    "type": "string"
                 },
                 "tipo_consentimiento": {
                     "type": "string"
@@ -4848,6 +4842,26 @@ const docTemplate = `{
                 }
             }
         },
+        "request.UpdateConsentAuthorizationDTO": {
+            "type": "object",
+            "required": [
+                "detalles",
+                "fecha_consentimiento",
+                "tipo_consentimiento"
+            ],
+            "properties": {
+                "detalles": {
+                    "type": "string"
+                },
+                "fecha_consentimiento": {
+                    "type": "string",
+                    "example": "2025-01-20"
+                },
+                "tipo_consentimiento": {
+                    "type": "string"
+                }
+            }
+        },
         "request.UpdateHospitalEmployeeAndUserDTO": {
             "type": "object",
             "properties": {
@@ -4980,6 +4994,24 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "observaciones_recomendaciones": {
+                    "type": "string"
+                }
+            }
+        },
+        "response.ConsentAuthorizationResponseDTO": {
+            "type": "object",
+            "properties": {
+                "detalles": {
+                    "type": "string"
+                },
+                "fecha_consentimiento": {
+                    "type": "string",
+                    "example": "2025-01-20"
+                },
+                "id_consentimiento": {
+                    "type": "integer"
+                },
+                "tipo_consentimiento": {
                     "type": "string"
                 }
             }
