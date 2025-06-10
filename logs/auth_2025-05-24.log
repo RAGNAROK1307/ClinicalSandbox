@@ -1,0 +1,10 @@
+AUTH: 2025/05/24 00:17:33 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/24 00:18:16 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGOUT
+AUTH: 2025/05/24 00:19:24 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/24 00:23:28 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED (pendiente de promoción)
+AUTH: 2025/05/24 00:23:28 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED (pendiente de promoción)
+AUTH: 2025/05/24 00:23:28 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED (pendiente de promoción)
+AUTH: 2025/05/24 00:23:28 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED (pendiente de promoción)
+AUTH: 2025/05/24 00:24:37 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_PROMOTED
+AUTH: 2025/05/24 00:28:41 logger.go:35: UserID: 0 | Username:  | Action: INVALID_TOKEN
+AUTH: 2025/05/24 00:28:41 logger.go:35: UserID: 0 | Username:  | Action: INVALID_TOKEN

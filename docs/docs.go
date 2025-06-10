@@ -5011,6 +5011,12 @@ const docTemplate = `{
                 "id_consentimiento": {
                     "type": "integer"
                 },
+                "id_paciente": {
+                    "type": "integer"
+                },
+                "nombre_completo": {
+                    "type": "string"
+                },
                 "tipo_consentimiento": {
                     "type": "string"
                 }

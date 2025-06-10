@@ -31,6 +31,7 @@ func Routes() {
 
 	// Login Route
 	r.POST("/login", authServices.Login)
+	//r.GET("/auth/lock-status/:username", authServices.GetLockStatus)
 
 	// Rutas protegidas con autenticación
 	auth := r.Group("/")
@@ -99,11 +100,13 @@ func Routes() {
 		{
 			doctor.POST("/medical_records", services2.CreateMedicalRecord)
 			doctor.GET("/medical_records", services2.GetMedicalRecords)
-			//doctor.GET("/medical_records/:id", services2.GetMedicalRecord)
+			//doctor.GET("/medical_records/:id", services2.
+			//)
 			doctor.PUT("/medical_records/:id", services2.UpdateMedicalRecord)
 			doctor.DELETE("/medical_records/:id", services2.DeleteMedicalRecord)
 
 			doctor.POST("/medical-records-and-related", services2.CreateMedicalRecordAndRelated)
+			doctor.PUT("/medical-records-and-related/:id", services2.UpdateMedicalRecordAndRelated)
 			doctor.GET("/medical-records-and-related", services2.GetMedicalRecordsAndRelated)
 
 			doctor.POST("/treatments_prescriptions", services2.CreateTreatmentPrescription)

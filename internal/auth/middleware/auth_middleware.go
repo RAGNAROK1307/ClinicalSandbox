@@ -3,6 +3,7 @@ package middleware
 import (
 	"ClinicalSandBox/configs/db"
 	"ClinicalSandBox/internal/API/models"
+	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -13,10 +14,16 @@ import (
 )
 
 var (
-	jwtKey          = []byte("Simclec")
-	activeSessions  = make(map[uint]time.Time)
-	sessionMutex    = &sync.Mutex{}
-	sessionDuration = 2 * time.Minute
+	jwtKey           = []byte("Simclec")
+	activeSessions   = make(map[uint]time.Time)
+	tokenBlacklist   = make(map[string]time.Time)
+	blacklistMutex   = &sync.Mutex{}
+	SessionMutex     = &sync.Mutex{}
+	sessionDuration  = 5 * time.Minute
+	blacklistCleanup = 24 * time.Hour        // Limpiar tokens vencidos cada 24h
+	ActiveTokens     = make(map[uint]string) // userID -> token
+	PendingTokens    = make(map[uint]string)
+	tokenMutex       = &sync.Mutex{}
 )
 
 type Claims struct {
@@ -29,7 +36,16 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func GenerateToken(userID uint, roleID uint, userName string, roleName string, hospitalEmployeeID uint, patientID uint) (string, error) {
+func GenerateToken(userID uint, roleID uint, userName string, roleName string, hospitalEmployeeID uint, patientID uint, forceRenewal bool) (string, error) {
+	tokenMutex.Lock()
+	defer tokenMutex.Unlock()
+
+	// Solo bloquear login si NO es renovación
+	if _, exists := ActiveTokens[userID]; exists && !forceRenewal {
+		logAuthAction(userID, userName, "LOGIN_BLOCKED (sesión activa)")
+		return "", errors.New("ya existe una sesión activa para este usuario")
+	}
+
 	claims := &Claims{
 		UserID:           userID,
 		RoleID:           roleID,
@@ -43,106 +59,122 @@ func GenerateToken(userID uint, roleID uint, userName string, roleName string, h
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		return "", err
+	}
 
-	// Registrar la sesión activa
-	sessionMutex.Lock()
-	activeSessions[userID] = time.Now()
-	sessionMutex.Unlock()
+	if !forceRenewal {
+		// Solo guardar como activa si es login original
+		ActiveTokens[userID] = tokenString
+		logAuthAction(userID, userName, "LOGIN")
+	} else {
+		// Guardar como token pendiente de promoción
+		PendingTokens[userID] = tokenString
+		logAuthAction(userID, userName, "TOKEN_RENEWED (pendiente de promoción)")
+	}
 
-	return token.SignedString(jwtKey)
+	return tokenString, nil
 }
 
-/*func AuthMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		authHeader := c.GetHeader("Authorization")
-		if authHeader == "" {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
-			c.Abort()
-			return
+func init() {
+	// Goroutine para limpiar tokens vencidos periódicamente
+	initLogger()
+	go checkExpiredSessions()
+	go func() {
+		for {
+			time.Sleep(blacklistCleanup)
+			cleanExpiredBlacklistedTokens()
 		}
+	}()
+}
 
-		tokenString := strings.Split(authHeader, " ")[1]
-		claims := &Claims{}
+func cleanExpiredBlacklistedTokens() {
+	blacklistMutex.Lock()
+	defer blacklistMutex.Unlock()
 
-		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-			return jwtKey, nil
-		})
-
-		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
-			c.Abort()
-			return
+	now := time.Now()
+	for token, exp := range tokenBlacklist {
+		if now.After(exp) {
+			delete(tokenBlacklist, token)
 		}
-
-		// Verificar si el token está a punto de expirar (por ejemplo, en menos de 1 minuto)
-		timeLeft := time.Unix(claims.ExpiresAt, 0).Sub(time.Now())
-		shouldRenew := timeLeft < time.Minute
-
-		// Si necesita renovación, generar nuevo token
-		if shouldRenew {
-			newToken, err := GenerateToken(
-				claims.UserID,
-				claims.RoleID,
-				claims.UserName,
-				claims.RoleName,
-				claims.HospitalEmployee,
-				claims.Patient,
-			)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to renew token"})
-				c.Abort()
-				return
-			}
-
-			// Agregar el nuevo token a la respuesta
-			c.Header("X-Renewed-Token", newToken)
-		}
-
-		// Actualizar tiempo de última actividad
-		sessionMutex.Lock()
-		activeSessions[claims.UserID] = time.Now()
-		sessionMutex.Unlock()
-
-		// Resto del middleware
-		var user models.User
-		if err := db.DB.First(&user, claims.UserID).Error; err != nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not found"})
-			c.Abort()
-			return
-		}
-
-		c.Set("claims", claims)
-		c.Set("user", user)
-		c.Set("user_id", claims.UserID)
-		c.Set("user_name", claims.UserName)
-		c.Set("role_name", claims.RoleName)
-		c.Set("hospital_employee_id", claims.HospitalEmployee)
-		c.Set("patient_id", claims.Patient)
-
-		c.Next()
 	}
-}*/
+}
+
+func isTokenBlacklisted(tokenString string) bool {
+	blacklistMutex.Lock()
+	defer blacklistMutex.Unlock()
+
+	exp, exists := tokenBlacklist[tokenString]
+	if !exists {
+		return false
+	}
+
+	// Si el token ya expiró, no está realmente blacklisted
+	return time.Now().Before(exp)
+}
+
+func addToBlacklist(tokenString string, exp time.Time) {
+	blacklistMutex.Lock()
+	defer blacklistMutex.Unlock()
+
+	tokenBlacklist[tokenString] = exp
+}
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
+			logAuthAction(0, "", "MISSING_TOKEN")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
 			c.Abort()
 			return
 		}
 
 		tokenString := strings.Split(authHeader, " ")[1]
-		claims := &Claims{}
 
+		if isTokenBlacklisted(tokenString) {
+			logAuthAction(0, "", "BLACKLISTED_TOKEN")
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Sesión terminada"})
+			c.Abort()
+			return
+		}
+
+		claims := &Claims{}
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
 		})
 
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			logAuthAction(0, "", "INVALID_TOKEN")
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
 			c.Abort()
 			return
+		}
+
+		// Verificar si el token coincide con el activo registrado
+		tokenMutex.Lock()
+		activeToken, exists := ActiveTokens[claims.UserID]
+		pendingToken, pendingExists := PendingTokens[claims.UserID]
+		tokenMutex.Unlock()
+
+		// Si el token no es el activo ni el pendiente, es inválido
+		if !exists || (tokenString != activeToken && (!pendingExists || tokenString != pendingToken)) {
+			logAuthAction(claims.UserID, claims.UserName, "SESSION_REJECTED (token no coincide)")
+			c.JSON(http.StatusUnauthorized, gin.H{
+				"error": "Ya hay una sesión activa. Cierra la otra sesión primero.",
+			})
+			c.Abort()
+			return
+		}
+
+		// Si es el token pendiente, promoverlo a activo
+		if tokenString == pendingToken {
+			tokenMutex.Lock()
+			ActiveTokens[claims.UserID] = pendingToken
+			delete(PendingTokens, claims.UserID)
+			tokenMutex.Unlock()
+			logAuthAction(claims.UserID, claims.UserName, "TOKEN_PROMOTED")
 		}
 
 		// Verificar si el token está a punto de expirar (por ejemplo, en menos de 1 minuto)
@@ -158,14 +190,14 @@ func AuthMiddleware() gin.HandlerFunc {
 				claims.RoleName,
 				claims.HospitalEmployee,
 				claims.Patient,
+				true, // forzar renovación
 			)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to renew token"})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al renovar token"})
 				c.Abort()
 				return
 			}
 
-			// Agregar el nuevo token a la respuesta
 			c.Header("X-Renewed-Token", newToken)
 		}
 
@@ -173,9 +205,9 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Header("Access-Control-Expose-Headers", "X-Renewed-Token")
 
 		// Actualizar tiempo de última actividad
-		sessionMutex.Lock()
+		SessionMutex.Lock()
 		activeSessions[claims.UserID] = time.Now()
-		sessionMutex.Unlock()
+		SessionMutex.Unlock()
 
 		// Resto del middleware
 		var user models.User
@@ -370,15 +402,47 @@ func ValidatePasswordAccess() gin.HandlerFunc {
 func Logout(c *gin.Context) {
 	claimsInterface, exists := c.Get("claims")
 	if !exists {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No active session"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No hay sesión activa"})
 		return
 	}
 
 	claims := claimsInterface.(*Claims)
+	authHeader := c.GetHeader("Authorization")
 
-	sessionMutex.Lock()
+	if authHeader != "" {
+		tokenString := strings.Split(authHeader, " ")[1]
+		exp := time.Unix(claims.ExpiresAt, 0)
+		addToBlacklist(tokenString, exp)
+	}
+
+	tokenMutex.Lock()
+	delete(ActiveTokens, claims.UserID)
 	delete(activeSessions, claims.UserID)
-	sessionMutex.Unlock()
+	tokenMutex.Unlock()
 
-	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
+	logAuthAction(claims.UserID, claims.UserName, "LOGOUT")
+	c.JSON(http.StatusOK, gin.H{"message": "Sesión cerrada correctamente"})
+}
+
+// Función para verificar tokens expirados periódicamente
+func checkExpiredSessions() {
+	for {
+		time.Sleep(1 * time.Minute) // Verificar cada minuto
+		now := time.Now()
+
+		tokenMutex.Lock()
+		for userID, lastActive := range activeSessions {
+			if now.Sub(lastActive) > sessionDuration {
+				if token, exists := ActiveTokens[userID]; exists {
+					addToBlacklist(token, now)
+					delete(ActiveTokens, userID)
+					delete(activeSessions, userID)
+
+					// Obtener nombre de usuario para el log (requeriría una consulta a la DB)
+					logAuthAction(userID, "SYSTEM", "SESSION_EXPIRED")
+				}
+			}
+		}
+		tokenMutex.Unlock()
+	}
 }
