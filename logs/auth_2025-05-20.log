@@ -1,0 +1,146 @@
+AUTH: 2025/05/20 00:31:31 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:32:35 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:32:35 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:32:35 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 00:32:35 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 00:32:56 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:32:56 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 00:32:56 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 00:33:01 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:33:10 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:33:15 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 00:33:15 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 00:34:27 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:35:29 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:36:49 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 00:47:52 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:48:07 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 00:50:20 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGOUT
+AUTH: 2025/05/20 00:50:30 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 00:50:55 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:51:13 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 00:56:25 logger.go:35: UserID: 6 | Username: SYSTEM | Action: SESSION_EXPIRED
+AUTH: 2025/05/20 00:56:53 logger.go:35: UserID: 0 | Username:  | Action: INVALID_TOKEN
+AUTH: 2025/05/20 00:57:04 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 00:57:42 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGOUT
+AUTH: 2025/05/20 00:58:05 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 01:10:36 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 01:16:05 logger.go:35: UserID: 0 | Username:  | Action: INVALID_TOKEN
+AUTH: 2025/05/20 01:16:17 logger.go:35: UserID: 6 | Username: SYSTEM | Action: SESSION_EXPIRED
+AUTH: 2025/05/20 01:16:53 logger.go:35: UserID: 0 | Username:  | Action: INVALID_TOKEN
+AUTH: 2025/05/20 01:17:21 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 01:18:42 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGOUT
+AUTH: 2025/05/20 20:41:07 logger.go:35: UserID: 35 | Username: balt_neo75 | Action: LOGIN
+AUTH: 2025/05/20 20:42:14 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 20:42:20 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGOUT
+AUTH: 2025/05/20 20:42:26 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 20:42:33 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGOUT
+AUTH: 2025/05/20 20:47:02 logger.go:35: UserID: 35 | Username: SYSTEM | Action: SESSION_EXPIRED
+AUTH: 2025/05/20 21:11:02 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN
+AUTH: 2025/05/20 21:15:08 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:15:09 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:15:40 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:22:28 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN
+AUTH: 2025/05/20 21:26:50 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:28:04 logger.go:35: UserID: 0 | Username:  | Action: INVALID_TOKEN
+AUTH: 2025/05/20 21:29:03 logger.go:35: UserID: 15 | Username: SYSTEM | Action: SESSION_EXPIRED
+AUTH: 2025/05/20 21:33:09 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN
+AUTH: 2025/05/20 21:37:11 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 21:37:20 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN
+AUTH: 2025/05/20 21:39:23 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 21:42:03 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:42:20 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:43:46 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:43:46 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:43:46 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:43:46 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:43:50 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:43:50 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:43:54 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:43:54 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 21:45:11 logger.go:35: UserID: 15 | Username: SYSTEM | Action: SESSION_EXPIRED
+AUTH: 2025/05/20 21:45:11 logger.go:35: UserID: 6 | Username: SYSTEM | Action: SESSION_EXPIRED
+AUTH: 2025/05/20 21:53:04 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN
+AUTH: 2025/05/20 21:53:30 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 21:55:11 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:15:37 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:16:49 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:18:21 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:18:21 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 22:18:21 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 22:18:21 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 22:19:07 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:20:18 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:21:57 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:21:57 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 22:21:57 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 22:21:57 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 22:25:25 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:27:05 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:27:05 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:27:05 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:27:05 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:29:26 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:31:00 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:31:00 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:31:00 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:31:00 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:31:43 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 22:33:33 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 22:33:33 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 22:33:33 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 22:33:33 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_BLOCKED (sesión activa)
+AUTH: 2025/05/20 22:33:45 logger.go:35: UserID: 0 | Username:  | Action: INVALID_TOKEN
+AUTH: 2025/05/20 22:33:45 logger.go:35: UserID: 0 | Username:  | Action: INVALID_TOKEN
+AUTH: 2025/05/20 22:37:45 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN (or TOKEN_RENEWED)
+AUTH: 2025/05/20 22:39:20 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN (or TOKEN_RENEWED)
+AUTH: 2025/05/20 22:39:20 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:39:20 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:39:21 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:41:05 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN (or TOKEN_RENEWED)
+AUTH: 2025/05/20 22:42:42 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN (or TOKEN_RENEWED)
+AUTH: 2025/05/20 22:42:42 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:42:42 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:42:42 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 22:49:05 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN (or TOKEN_RENEWED)
+AUTH: 2025/05/20 22:56:18 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN_SUCCESS
+AUTH: 2025/05/20 22:57:52 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED
+AUTH: 2025/05/20 22:57:52 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWAL_SUCCESS
+AUTH: 2025/05/20 22:58:27 logger.go:35: UserID: 15 | Username: maria_lopez90 | Action: LOGIN
+AUTH: 2025/05/20 23:12:03 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 23:13:42 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 23:13:42 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:13:42 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:13:42 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:16:40 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED
+AUTH: 2025/05/20 23:18:16 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED
+AUTH: 2025/05/20 23:18:16 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:18:16 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:18:16 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:20:27 logger.go:35: UserID: 6 | Username: SYSTEM | Action: SESSION_EXPIRED
+AUTH: 2025/05/20 23:23:56 logger.go:35: UserID: 0 | Username:  | Action: INVALID_TOKEN
+AUTH: 2025/05/20 23:23:56 logger.go:35: UserID: 0 | Username:  | Action: INVALID_TOKEN
+AUTH: 2025/05/20 23:24:09 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 23:25:45 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED
+AUTH: 2025/05/20 23:25:45 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:25:45 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:25:45 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:32:19 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 23:33:50 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/05/20 23:33:50 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:33:50 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:33:50 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:42:32 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED
+AUTH: 2025/05/20 23:44:10 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED
+AUTH: 2025/05/20 23:44:10 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:44:10 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:44:10 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:46:14 logger.go:35: UserID: 6 | Username: SYSTEM | Action: SESSION_EXPIRED
+AUTH: 2025/05/20 23:50:45 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED
+AUTH: 2025/05/20 23:52:21 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED
+AUTH: 2025/05/20 23:52:21 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:52:21 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:52:21 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/05/20 23:55:20 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: TOKEN_RENEWED
+AUTH: 2025/05/20 23:56:24 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/05/20 23:56:24 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN

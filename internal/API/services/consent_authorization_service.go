@@ -77,9 +77,11 @@ func GetConsentAuthorizations(c *gin.Context) {
 	for _, ca := range consent_authorizations {
 		responseDTOs = append(responseDTOs, response.ConsentAuthorizationResponseDTO{
 			IDConsentAuthorization: ca.IDConsentAuthorization,
+			IDPatient:              ca.IDPatient,
 			ConsentType:            ca.ConsentType,
 			ConsentDate:            ca.ConsentDate.Format("2006-01-02"),
 			Details:                ca.Details,
+			FullName:               ca.Patient.FullName,
 		})
 	}
 
