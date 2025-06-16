@@ -19,7 +19,7 @@ func Routes() {
 	r.MaxMultipartMemory = 5 << 20 // 5 MB
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, // Reemplaza con la URL de tu frontend si cambia http://127.0.0.1:5500
+		AllowOrigins:     []string{"https://simclec.unillanoscyseth.edu.co"}, // Reemplaza con la URL de tu frontend si cambia http://127.0.0.1:5500
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
