@@ -1,0 +1,10 @@
+AUTH: 2025/06/11 23:50:04 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/06/11 23:50:17 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGOUT
+AUTH: 2025/06/11 23:59:18 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/06/11 23:59:28 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/06/11 23:59:46 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGOUT
+AUTH: 2025/06/11 23:59:46 logger.go:35: UserID: 0 | Username:  | Action: BLACKLISTED_TOKEN
+AUTH: 2025/06/12 00:01:00 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
+AUTH: 2025/06/12 00:01:11 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGOUT
+AUTH: 2025/06/12 00:06:02 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: SESSION_REJECTED (token no coincide)
+AUTH: 2025/06/12 00:06:15 logger.go:35: UserID: 6 | Username: AdministradorSimclec | Action: LOGIN
