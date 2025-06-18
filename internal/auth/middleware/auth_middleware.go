@@ -317,6 +317,59 @@ func ValidateUserAccess() gin.HandlerFunc {
 	}
 }
 
+func ValidateUpdatePatient() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		// Obtener los claims del contexto
+		claimsInterface, exists := c.Get("claims")
+		if !exists {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Claims not found"})
+			c.Abort()
+			return
+		}
+
+		// Convertir los claims a la estructura Claims
+		claims, ok := claimsInterface.(*Claims)
+		if !ok {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid claims format"})
+			c.Abort()
+			return
+		}
+
+		// Si el usuario es administrador, permitir el acceso sin verificación adicional
+		if claims.RoleName == "Administrador" || claims.RoleName == "Directivo" {
+			c.Next()
+			return
+		}
+
+		// Obtener el ID de la ruta y convertirlo a uint
+		requestedIDStr := c.Param("id")
+		requestedID, err := strconv.ParseUint(requestedIDStr, 10, 64)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+			c.Abort()
+			return
+		}
+
+		// Verificar el acceso según el rol
+		switch claims.RoleName {
+
+		case "Paciente":
+			// Para pacientes, verificar el ID del paciente
+			if uint(requestedID) != claims.Patient {
+				c.JSON(http.StatusForbidden, gin.H{"error": "You can only access your own information"})
+				c.Abort()
+				return
+			}
+		default:
+			c.JSON(http.StatusForbidden, gin.H{"error": "Insufficient permissions"})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func ValidateMedicalRecordAccess() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		claimsInterface, exists := c.Get("claims")
