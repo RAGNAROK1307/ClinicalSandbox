@@ -19,7 +19,7 @@ func Routes() {
 	r.MaxMultipartMemory = 5 << 20 // 5 MB
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://simclec.unillanoscyseth.edu.co"}, // Reemplaza con la URL de tu frontend si cambia http://127.0.0.1:5500
+		AllowOrigins:     []string{"https://simclec.unillanoscyseth.edu.co"}, //
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
@@ -187,7 +187,7 @@ func Routes() {
 	patientAndAdminAndExecutive.Use(authMiddleware.RoleMiddleware(db.PacienteID, db.AdminID, db.DirectivoID)) // Médicos y administradores
 	{
 		patientAndAdminAndExecutive.GET("/user-and-patients/:id", authMiddleware.ValidateUserAccess(), services2.GetUserAndPatient)
-		patientAndAdminAndExecutive.PUT("/user-and-patients/:id", authMiddleware.ValidateUserAccess(), services2.UpdateUserAndPatient)
+		patientAndAdminAndExecutive.PUT("/user-and-patients/:id", authMiddleware.ValidateUpdatePatient(), services2.UpdateUserAndPatient)
 	}
 
 	doctorAndAdminAndExecutive := auth.Group("/")
