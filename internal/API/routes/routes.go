@@ -16,10 +16,9 @@ import (
 func Routes() {
 
 	r := gin.Default()
-	r.MaxMultipartMemory = 5 << 20 // 5 MB
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://simclec.unillanoscyseth.edu.co"}, //
+		AllowOrigins:     []string{"*"}, //
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
@@ -31,7 +30,6 @@ func Routes() {
 
 	// Login Route
 	r.POST("/login", authServices.Login)
-	//r.GET("/auth/lock-status/:username", authServices.GetLockStatus)
 
 	// Rutas protegidas con autenticación
 	auth := r.Group("/")
@@ -42,7 +40,7 @@ func Routes() {
 
 		// Rutas protegidas con roles específicos
 		admin := auth.Group("/")
-		admin.Use(authMiddleware.RoleMiddleware(db.AdminID)) // Supongamos que el rol 1 es el de administrador
+		admin.Use(authMiddleware.RoleMiddleware(db.AdminID))
 		{
 			admin.POST("/roles", services2.CreateRole)
 			admin.GET("/roles", services2.GetRoles)
@@ -94,7 +92,7 @@ func Routes() {
 
 		}
 
-		// Rutas para médicos (Rol 7)
+		// Rutas para médicos
 		doctor := auth.Group("/")
 		doctor.Use(authMiddleware.RoleMiddleware(db.MedicoID))
 		{
@@ -184,20 +182,20 @@ func Routes() {
 	}
 
 	patientAndAdminAndExecutive := auth.Group("/")
-	patientAndAdminAndExecutive.Use(authMiddleware.RoleMiddleware(db.PacienteID, db.AdminID, db.DirectivoID)) // Médicos y administradores
+	patientAndAdminAndExecutive.Use(authMiddleware.RoleMiddleware(db.PacienteID, db.AdminID, db.DirectivoID)) // Pacientes, ejecutivos y administradores
 	{
 		patientAndAdminAndExecutive.GET("/user-and-patients/:id", authMiddleware.ValidateUserAccess(), services2.GetUserAndPatient)
 		patientAndAdminAndExecutive.PUT("/user-and-patients/:id", authMiddleware.ValidateUpdatePatient(), services2.UpdateUserAndPatient)
 	}
 
 	doctorAndAdminAndExecutive := auth.Group("/")
-	doctorAndAdminAndExecutive.Use(authMiddleware.RoleMiddleware(db.MedicoID, db.AdminID, db.DirectivoID)) // Médicos y administradores
+	doctorAndAdminAndExecutive.Use(authMiddleware.RoleMiddleware(db.MedicoID, db.AdminID, db.DirectivoID)) // Médicos, ejecutivos y administradores
 	{
 		doctorAndAdminAndExecutive.GET("/user-and-patients", services2.GetUserAndPatients)
 	}
 
 	executiveAndAdmin := auth.Group("/")
-	executiveAndAdmin.Use(authMiddleware.RoleMiddleware(db.DirectivoID, db.AdminID)) // Médicos y administradores
+	executiveAndAdmin.Use(authMiddleware.RoleMiddleware(db.DirectivoID, db.AdminID)) // Ejecutivos y administradores
 	{
 		executiveAndAdmin.POST("/user-and-patients", services2.CreateUserAndPatient)
 
@@ -206,15 +204,14 @@ func Routes() {
 	}
 
 	doctorAndPatient := auth.Group("/")
-	doctorAndPatient.Use(authMiddleware.RoleMiddleware(db.MedicoID, db.PacienteID)) // Médicos y administradores
+	doctorAndPatient.Use(authMiddleware.RoleMiddleware(db.MedicoID, db.PacienteID)) // Médicos y pacientes
 	{
-		doctorAndPatient.GET("/treatments_prescriptions/:id", authMiddleware.ValidateMedicalRecordAccess(), services2.GetTreatmentPrescription) //revisar
+		doctorAndPatient.GET("/treatments_prescriptions/:id", authMiddleware.ValidateMedicalRecordAccess(), services2.GetTreatmentPrescription)
 
-		doctorAndPatient.GET("/consultation_visits/:id", authMiddleware.ValidateMedicalRecordAccess(), services2.GetConsultationVisit) //revisar
+		doctorAndPatient.GET("/consultation_visits/:id", authMiddleware.ValidateMedicalRecordAccess(), services2.GetConsultationVisit)
 
-		doctorAndPatient.GET("/medical_records/:id", authMiddleware.ValidateMedicalRecordAccess(), services2.GetMedicalRecord) //revisar
-
-		doctorAndPatient.GET("/medical-records-and-related/:id", authMiddleware.ValidateMedicalRecordAccess(), services2.GetMedicalRecordAndRelated)
+		doctorAndPatient.GET("/medical_records/:id", authMiddleware.ValidateMedicalRecordAccess(), services2.GetMedicalRecord)
+		doctorAndPatient.GET("/medical-records-and-related/:id", services2.GetMedicalRecordAndRelated)
 	}
 
 	r.Run(":8080")

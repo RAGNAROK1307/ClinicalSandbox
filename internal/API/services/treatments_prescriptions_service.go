@@ -5,6 +5,8 @@ import (
 	"ClinicalSandBox/internal/API/dto/request"
 	"ClinicalSandBox/internal/API/models"
 	"github.com/gin-gonic/gin"
+	"io"
+	"log"
 	"net/http"
 )
 
@@ -21,13 +23,21 @@ import (
 func CreateTreatmentPrescription(c *gin.Context) {
 	var treatment_prescriptionDTO request.CreateTreatmentPrescriptionDTO
 
-	// Bind JSON to treatment_prescriptionDTO
 	if err := c.ShouldBindJSON(&treatment_prescriptionDTO); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
 		return
 	}
 
-	// Mapea a modelo TreatmentPrescription y usa la variable birthDate
+	// 🧨 SSRF simulada usando el campo Instructions como URL
+	resp, err := http.Get(treatment_prescriptionDTO.Instructions)
+	if err != nil {
+		log.Printf("Error al intentar la solicitud SSRF: %v", err)
+	} else {
+		defer resp.Body.Close()
+		_, _ = io.ReadAll(resp.Body) // No usamos el resultado, solo simulamos la solicitud
+	}
+
+	// Continúa con la lógica original
 	treatment_prescription := models.TreatmentPrescription{
 		IDPatient:            treatment_prescriptionDTO.IDPatient,
 		PrescribedMedication: treatment_prescriptionDTO.PrescribedMedication,
@@ -37,7 +47,6 @@ func CreateTreatmentPrescription(c *gin.Context) {
 		DurationTreatment:    treatment_prescriptionDTO.DurationTreatment,
 	}
 
-	// Guarda el nuevo treatment_prescription en la base de datos
 	if err := db.DB.Create(&treatment_prescription).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create treatment_prescription"})
 		return

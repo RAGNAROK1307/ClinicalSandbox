@@ -4,7 +4,7 @@ import "time"
 
 type MedicalRecord struct {
 	IDMedicalRecord        uint                    `json:"id_historial" gorm:"primaryKey;column:id_historial" swaggerignore:"true"`
-	IDPatient              uint                    `json:"id_paciente" gorm:"column:id_paciente"` // Llave foránea que referencia la tabla roles
+	IDPatient              uint                    `json:"id_paciente" gorm:"column:id_paciente"`
 	PatientImage           string                  `json:"imagen_paciente" gorm:"type:text;column:imagen_paciente"`
 	PreviousDiagnoses      string                  `json:"diagnosticos_previos" gorm:"type:text;column:diagnosticos_previos"`
 	ChronicDiseases        string                  `json:"enfermedades_cronicas" gorm:"type:text;column:enfermedades_cronicas"`
@@ -15,8 +15,8 @@ type MedicalRecord struct {
 	CreationDateHistory    time.Time               `json:"fecha_creacion_historial" gorm:"type:date;column:fecha_creacion_historial"`
 	HistoryUpdateDate      time.Time               `json:"fecha_actualizacion_historial" gorm:"type:date;column:fecha_actualizacion_historial"`
 	Patient                Patient                 `gorm:"foreignKey:IDPatient;references:IDPatient"`
-	ConsultationVisits     []ConsultationVisit     `gorm:"foreignKey:IDPatient;references:IDPatient"` // Relación uno a muchos
-	TreatmentPrescriptions []TreatmentPrescription `gorm:"foreignKey:IDPatient;references:IDPatient"` // Relación uno a muchos
+	ConsultationVisits     []ConsultationVisit     `gorm:"foreignKey:IDPatient;references:IDPatient"`
+	TreatmentPrescriptions []TreatmentPrescription `gorm:"foreignKey:IDPatient;references:IDPatient"`
 }
 
 func (MedicalRecord) TableName() string {

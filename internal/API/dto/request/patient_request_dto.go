@@ -1,7 +1,7 @@
 package request
 
 type CreatePatientDTO struct {
-	IDRole               uint   `json:"id_rol" binding:"required"` // ID del rol asociado, requerido
+	IDRole               uint   `json:"id_rol" binding:"required"`
 	IDIdentification     uint   `json:"id_identificacion" binding:"required"`
 	IDDemographicData    uint   `json:"id_datos_demograficos" binding:"required"`
 	IDUser               uint   `json:"id_usuarios" binding:"required"`

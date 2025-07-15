@@ -3,9 +3,7 @@ package request
 import "time"
 
 type CreateMedicalRecordDTO struct {
-	IDPatient uint `json:"id_paciente" binding:"required"` // ID del rol asociado, requerido
-	//IDConsultationVisit     uint      `json:"id_consulta" binding:"required"`
-	//IDTreatmentPrescription uint      `json:"id_tratamiento" binding:"required"`
+	IDPatient           uint      `json:"id_paciente" binding:"required"`
 	PatientImage        string    `json:"imagen_paciente" binding:"required"`
 	PreviousDiagnoses   string    `json:"diagnosticos_previos" binding:"required"`
 	ChronicDiseases     string    `json:"enfermedades_cronicas" binding:"required"`

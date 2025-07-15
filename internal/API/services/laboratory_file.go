@@ -4,27 +4,27 @@ import (
 	"ClinicalSandBox/configs/db"
 	"ClinicalSandBox/internal/API/dto/response"
 	"ClinicalSandBox/internal/API/models"
-	"bytes"
-	"encoding/base64"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
-	"strings"
-	_ "time"
+	"os"
+	"path/filepath"
 )
 
-// UploadLaboratoryFile godoc
-// @Summary Upload laboratory file
-// @Description Upload a file (PDF, image, etc.) for a laboratory result
-// @Tags laboratories
-// @Accept multipart/form-data
-// @Param id path string true "Laboratory ID"
-// @Param file formData file true "Laboratory file"
-// @Success 200 {object} response.LaboratoryFileResponseDTO
-// @Failure 400 {object} map[string]string
-// @Failure 500 {object} map[string]string
-// @Router /laboratories/{id}/file [post]
+const (
+	uploadDir = "Image_of_Laboratories"
+)
+
+// ensureUploadDir crea el directorio de uploads si no existe
+func ensureUploadDir() error {
+	if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+		return os.Mkdir(uploadDir, 0755)
+	}
+	return nil
+}
+
+// UploadLaboratoryFile guarda el archivo en el sistema de archivos
 func UploadLaboratoryFile(c *gin.Context) {
 	laboratoryID := c.Param("id")
 
@@ -41,74 +41,40 @@ func UploadLaboratoryFile(c *gin.Context) {
 		return
 	}
 
-	// Validar tamaño del archivo (max 10MB)
-	if file.Size > 10<<20 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds 10MB limit"})
+	// Crear directorio si no existe
+	if err := ensureUploadDir(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload directory"})
 		return
 	}
 
-	// Leer el archivo
-	src, err := file.Open()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file"})
-		return
-	}
-	defer src.Close()
+	// Generar nombre único para el archivo (usamos el nombre original)
+	newFilename := laboratoryID + filepath.Ext(file.Filename)
+	filePath := filepath.Join(uploadDir, newFilename)
 
-	// Validar tipo de archivo (permite PDF e imágenes)
-	buff := make([]byte, 512)
-	if _, err := src.Read(buff); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file"})
+	// Guardar el archivo
+	if err := c.SaveUploadedFile(file, filePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
 		return
 	}
 
-	mimeType := http.DetectContentType(buff)
-	if !strings.HasPrefix(mimeType, "image/") && !strings.HasPrefix(mimeType, "application/pdf") {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "File must be an image or PDF"})
-		return
-	}
-
-	// Volver al inicio del archivo
-	if _, err := src.Seek(0, 0); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
-		return
-	}
-
-	// Convertir a Base64
-	buf := new(bytes.Buffer)
-	if _, err := buf.ReadFrom(src); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
-		return
-	}
-	fileBase64 := base64.StdEncoding.EncodeToString(buf.Bytes())
-
-	// Actualizar en la base de datos
+	// Actualizar en la base de datos (solo la ruta)
 	tx := db.DB.Begin()
 	if err := tx.Model(&models.Laboratory{}).
 		Where("id_laboratorio = ?", laboratoryID).
-		Update("ruta_archivo_externo", fileBase64).Error; err != nil {
+		Update("ruta_archivo_externo", filePath).Error; err != nil {
 		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update database"})
 		return
 	}
 	tx.Commit()
 
 	c.JSON(http.StatusOK, response.LaboratoryFileResponseDTO{
-		FileContent: fileBase64,
-		MimeType:    mimeType,
-		Message:     "File uploaded successfully",
+		FilePath: filePath,
+		Message:  "File uploaded successfully",
 	})
 }
 
-// GetLaboratoryFile godoc
-// @Summary Get laboratory file
-// @Description Get the laboratory file (base64 encoded)
-// @Tags laboratories
-// @Param id path string true "Laboratory ID"
-// @Produce json
-// @Success 200 {object} response.LaboratoryFileResponseDTO
-// @Failure 404 {object} map[string]string
-// @Router /laboratories/{id}/file [get]
+// GetLaboratoryFile devuelve el archivo desde el sistema de archivos
 func GetLaboratoryFile(c *gin.Context) {
 	laboratoryID := c.Param("id")
 
@@ -123,34 +89,17 @@ func GetLaboratoryFile(c *gin.Context) {
 		return
 	}
 
-	// Intentar detectar el tipo MIME
-	mimeType := "application/octet-stream" // valor por defecto
-	if decoded, err := base64.StdEncoding.DecodeString(laboratory.ExternalFilePath); err == nil {
-		if len(decoded) > 512 {
-			mimeType = http.DetectContentType(decoded[:512])
-		} else {
-			mimeType = http.DetectContentType(decoded)
-		}
+	// Verificar que el archivo existe
+	if _, err := os.Stat(laboratory.ExternalFilePath); os.IsNotExist(err) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "File not found on server"})
+		return
 	}
 
-	c.JSON(http.StatusOK, response.LaboratoryFileResponseDTO{
-		FileContent: laboratory.ExternalFilePath,
-		MimeType:    mimeType,
-	})
+	// Servir el archivo directamente
+	c.File(laboratory.ExternalFilePath)
 }
 
-// UpdateLaboratoryFile godoc
-// @Summary Update laboratory file
-// @Description Update the laboratory file (base64 encoded)
-// @Tags laboratories
-// @Accept multipart/form-data
-// @Param id path string true "Laboratory ID"
-// @Param file formData file true "Laboratory file"
-// @Success 200 {object} response.LaboratoryFileResponseDTO
-// @Failure 400 {object} map[string]string
-// @Failure 404 {object} map[string]string
-// @Failure 500 {object} map[string]string
-// @Router /laboratories/{id}/file [put]
+// UpdateLaboratoryFile actualiza el archivo en el sistema de archivos
 func UpdateLaboratoryFile(c *gin.Context) {
 	laboratoryID := c.Param("id")
 
@@ -171,104 +120,69 @@ func UpdateLaboratoryFile(c *gin.Context) {
 		return
 	}
 
-	// Validar tamaño del archivo (max 10MB)
-	if file.Size > 10<<20 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds 10MB limit"})
-		return
-	}
-
-	// Leer y validar el archivo
-	src, err := file.Open()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file"})
-		return
-	}
-	defer src.Close()
-
-	// Validar tipo de archivo
-	buff := make([]byte, 512)
-	if _, err := src.Read(buff); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid file"})
-		return
-	}
-
-	mimeType := http.DetectContentType(buff)
-	if !strings.HasPrefix(mimeType, "image/") && !strings.HasPrefix(mimeType, "application/pdf") {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "File must be an image or PDF"})
-		return
-	}
-
-	// Volver al inicio del archivo para leerlo completo
-	if _, err := src.Seek(0, 0); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
-		return
-	}
-
-	// Convertir a Base64
-	buf := new(bytes.Buffer)
-	if _, err := buf.ReadFrom(src); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
-		return
-	}
-	fileBase64 := base64.StdEncoding.EncodeToString(buf.Bytes())
-
-	// Actualizar en la base de datos con transacción
-	tx := db.DB.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
+	// Eliminar archivo anterior si existe
+	if laboratory.ExternalFilePath != "" {
+		if err := os.Remove(laboratory.ExternalFilePath); err != nil && !os.IsNotExist(err) {
+			log.Printf("Warning: Failed to remove old file: %v", err)
 		}
-	}()
+	}
 
+	// Crear directorio si no existe
+	if err := ensureUploadDir(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create upload directory"})
+		return
+	}
+
+	// Generar nuevo nombre de archivo
+	newFilename := laboratoryID + filepath.Ext(file.Filename)
+	filePath := filepath.Join(uploadDir, newFilename)
+
+	// Guardar el nuevo archivo
+	if err := c.SaveUploadedFile(file, filePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+
+	// Actualizar en la base de datos
+	tx := db.DB.Begin()
 	if err := tx.Model(&models.Laboratory{}).
 		Where("id_laboratorio = ?", laboratoryID).
-		Update("ruta_archivo_externo", fileBase64).Error; err != nil {
+		Update("ruta_archivo_externo", filePath).Error; err != nil {
 		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update file"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update database"})
 		return
 	}
-
-	if err := tx.Commit().Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to commit transaction"})
-		return
-	}
-
-	// Registrar la actualización
-	log.Printf("File updated for laboratory ID: %s", laboratoryID)
+	tx.Commit()
 
 	c.JSON(http.StatusOK, response.LaboratoryFileResponseDTO{
-		FileContent: fileBase64,
-		MimeType:    mimeType,
-		Message:     "File updated successfully",
+		FilePath: filePath,
+		Message:  "File updated successfully",
 	})
 }
 
-// DeleteLaboratoryFile godoc
-// @Summary Delete laboratory file
-// @Description Delete the laboratory file from database
-// @Tags laboratories
-// @Param id path string true "Laboratory ID"
-// @Success 204
-// @Failure 404 {object} map[string]string
-// @Failure 500 {object} map[string]string
-// @Router /laboratories/{id}/file [delete]
+// DeleteLaboratoryFile elimina el archivo del sistema de archivos
 func DeleteLaboratoryFile(c *gin.Context) {
 	laboratoryID := c.Param("id")
 
-	// Verificar si existe el laboratorio
-	var count int64
-	if err := db.DB.Model(&models.Laboratory{}).
-		Where("id_laboratorio = ?", laboratoryID).
-		Count(&count).Error; err != nil || count == 0 {
+	// Obtener la ruta del archivo primero
+	var laboratory models.Laboratory
+	if err := db.DB.First(&laboratory, laboratoryID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Laboratory not found"})
 		return
 	}
 
-	// Actualizar en la base de datos (establecer archivo como vacío)
+	// Eliminar el archivo si existe
+	if laboratory.ExternalFilePath != "" {
+		if err := os.Remove(laboratory.ExternalFilePath); err != nil && !os.IsNotExist(err) {
+			log.Printf("Warning: Failed to remove file: %v", err)
+		}
+	}
+
+	// Actualizar la base de datos
 	if err := db.DB.Model(&models.Laboratory{}).
 		Where("id_laboratorio = ?", laboratoryID).
 		Update("ruta_archivo_externo", "").Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete file"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update database"})
 		return
 	}
 

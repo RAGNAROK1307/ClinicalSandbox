@@ -6,5 +6,4 @@ type CreateDiagnosticImageDTO struct {
 	ImageType           string `json:"tipo_imagen" binding:"required"`
 	Description         string `json:"descripcion" binding:"required"`
 	ImageInterpretation string `json:"interpretacion_imagen" binding:"required"`
-	//ExternalFilePath    string `json:"ruta_archivo_externo" binding:"required"`
 }

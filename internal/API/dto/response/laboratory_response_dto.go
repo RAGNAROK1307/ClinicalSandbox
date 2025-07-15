@@ -10,7 +10,7 @@ type LaboratoryResponseDTO struct {
 }
 
 type LaboratoryFileResponseDTO struct {
-	FileContent string `json:"file_content"` // Contenido del archivo en base64
-	MimeType    string `json:"mime_type"`    // Tipo MIME del archivo (ej: "image/jpeg", "application/pdf")
-	Message     string `json:"message"`      // Mensaje opcional
+	FilePath string `json:"file_path"` // Ruta del archivo en el sistema
+	MimeType string `json:"mime_type"` // Tipo MIME del archivo (ej: "image/jpeg",)
+	Message  string `json:"message"`   // Mensaje opcional
 }

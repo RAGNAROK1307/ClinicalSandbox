@@ -5,39 +5,26 @@ import (
 	"ClinicalSandBox/internal/API/routes"
 )
 
+// main es el punto de entrada principal de la aplicación ClinicalSandBox.
+// Esta función ejecuta las siguientes tareas en orden:
+// 1. Conexión a la base de datos mediante db.ConnectDB().
+// 2. Migración automática de los modelos definidos con db.AutoMigrate().
+// 3. Inserción de datos iniciales como roles predeterminados con db.SeedRoles().
+// 4. Inicialización de las rutas HTTP del sistema con routes.Routes().
+//
+// Es fundamental que la base de datos esté disponible y correctamente configurada
+// antes de ejecutar esta función para garantizar el correcto funcionamiento del sistema.
 func main() {
 
+	// Establece la conexión con la base de datos PostgreSQL
 	db.ConnectDB()
+
+	// Realiza la migración automática de esquemas de base de datos
 	db.AutoMigrate()
+
+	// Carga los datos iniciales requeridos (por ejemplo, roles del sistema)
 	db.SeedRoles()
 
-	//authService := services.NewAuthService()
-
+	// Inicializa y ejecuta las rutas de la API
 	routes.Routes()
-	//routes.SetupRoutes()
-	//log.Println("Server starting on port 8080...")
-	//err := http.ListenAndServe(":8080", nil)
-	//if err != nil {
-	//	log.Fatal(err)
-	//}
 }
-
-/*func main() {
-
-	// Iniciar la base de datos
-	db.ConnectDB()
-	db.AutoMigrate()
-
-	// Iniciar las rutas de la API (Swagger, etc.)
-	go routes.Routes()
-
-	// Configurar y arrancar las rutas estáticas y de login
-	go routes.SetupRoutes()
-
-	// Arrancar el servidor para escuchar en el puerto 8080
-	log.Println("Server starting on port 8080...")
-	err := http.ListenAndServe(":8070", nil)
-	if err != nil {
-		log.Fatal(err)
-	}
-}*/

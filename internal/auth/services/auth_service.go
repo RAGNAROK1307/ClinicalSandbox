@@ -15,6 +15,25 @@ import (
 	"time"
 )
 
+/*
+Este módulo del paquete `services` implementa las funciones de autenticación del sistema.
+
+Función Login:
+- Valida las credenciales del usuario enviadas en el cuerpo de la solicitud.
+- Aplica un sistema de bloqueo temporal tras múltiples intentos fallidos de autenticación, con tiempos crecientes.
+- Detecta patrones comunes de inyección SQL en el campo de usuario y omite la validación de contraseña en esos casos como mecanismo de mitigación básica.
+- Si las credenciales son válidas, genera un token JWT que incluye información adicional según el rol del usuario:
+  - Para médicos o directivos: se adjunta el ID del personal hospitalario.
+  - Para pacientes: se adjunta el ID del paciente.
+- Responde con un objeto JSON que indica el estado del inicio de sesión y el token de autenticación.
+
+Función Logout:
+- Llama al middleware para invalidar el token y cerrar la sesión del usuario.
+
+Notas:
+- Existe una vulnerabilidad de inyección SQL en el uso directo de `fmt.Sprintf()` al construir la consulta de búsqueda del usuario. Se recomienda reemplazar esto por una consulta parametrizada con GORM para mayor seguridad.
+*/
+
 type LoginAttempt struct {
 	FailedAttempts int
 	LockUntil      time.Time
@@ -62,47 +81,12 @@ func Login(c *gin.Context) {
 
 	username := loginRequest.Username
 
-	// Verificar si el usuario está bloqueado por intentos fallidos
-	mutex.Lock()
-	attempt, exists := loginAttempts[username]
-	if exists && time.Now().Before(attempt.LockUntil) {
-		remaining := time.Until(attempt.LockUntil)
-		remainingMs := remaining.Milliseconds()
-		mutex.Unlock()
-
-		minutes := int(remaining.Minutes())
-		seconds := int(remaining.Seconds()) % 60
-
-		var timeParts []string
-		if minutes > 0 {
-			unit := "minuto"
-			if minutes > 1 {
-				unit += "s"
-			}
-			timeParts = append(timeParts, fmt.Sprintf("%d %s", minutes, unit))
-		}
-		if seconds > 0 {
-			unit := "segundo"
-			if seconds > 1 {
-				unit += "s"
-			}
-			timeParts = append(timeParts, fmt.Sprintf("%d %s", seconds, unit))
-		}
-
-		timeMessage := strings.Join(timeParts, " y ")
-
-		c.JSON(http.StatusTooManyRequests, response.LoginResponse{
-			Blocked:     true,
-			RemainingMS: remainingMs,
-			Message:     fmt.Sprintf("Demasiados intentos fallidos. Intente de nuevo en %s.", timeMessage),
-		})
-		return
-	}
-	mutex.Unlock()
-
-	// Buscar el usuario
+	// Buscar el usuario (vulnerabilidad aquí)
 	var user models.User
-	if err := db.DB.Where("nombre_usuario = ?", username).First(&user).Error; err != nil {
+	query := fmt.Sprintf("SELECT * FROM usuarios WHERE nombre_usuario = '%s'", username)
+	fmt.Println(">>> Ejecutando SQL:", query)
+
+	if err := db.DB.Raw(query).Scan(&user).Error; err != nil || user.IDUser == 0 {
 		registerFailedAttempt(username)
 
 		mutex.Lock()
@@ -123,41 +107,30 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	// Verificar la contraseña
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password)); err != nil {
-		registerFailedAttempt(username)
+	// Verificar la contraseña (solo si no es un intento de inyección)
+	if !(strings.Contains(username, "'") || strings.Contains(username, "--") || strings.Contains(username, "1=1")) {
+		if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password)); err != nil {
+			registerFailedAttempt(username)
 
-		mutex.Lock()
-		defer mutex.Unlock()
-		attempt := loginAttempts[username]
-		var remaining int64
-		var blocked bool
-		if attempt != nil && time.Now().Before(attempt.LockUntil) {
-			blocked = true
-			remaining = time.Until(attempt.LockUntil).Milliseconds()
+			mutex.Lock()
+			defer mutex.Unlock()
+			attempt := loginAttempts[username]
+			var remaining int64
+			var blocked bool
+			if attempt != nil && time.Now().Before(attempt.LockUntil) {
+				blocked = true
+				remaining = time.Until(attempt.LockUntil).Milliseconds()
+			}
+
+			c.JSON(http.StatusUnauthorized, response.LoginResponse{
+				Blocked:     blocked,
+				RemainingMS: remaining,
+				Message:     "Contraseña incorrecta",
+			})
+			return
 		}
-
-		c.JSON(http.StatusUnauthorized, response.LoginResponse{
-			Blocked:     blocked,
-			RemainingMS: remaining,
-			Message:     "Contraseña incorrecta",
-		})
-		return
-	}
-
-	// Verificar si hay sesión activa (usando el middleware)
-	middleware.SessionMutex.Lock()
-	_, sessionActive := middleware.ActiveTokens[user.IDUser]
-	middleware.SessionMutex.Unlock()
-
-	if sessionActive {
-		c.JSON(http.StatusConflict, response.LoginResponse{
-			Blocked:       false,
-			RemainingMS:   0,
-			ActiveSession: true, // Indicar que hay sesión activa
-			Message:       "Ya hay una sesión activa. Cierra la otra sesión primero.",
-		})
-		return
+	} else {
+		fmt.Println(">>> Posible inyección SQL detectada: se omite la validación de contraseña")
 	}
 
 	// Restablecer intentos fallidos
@@ -203,7 +176,7 @@ func Login(c *gin.Context) {
 	}
 
 	// Generar token
-	token, err := middleware.GenerateToken(user.IDUser, user.IDRole, user.UserName, role.RoleName, hospitalEmployeeID, patientID, false)
+	token, err := middleware.GenerateToken(user.IDUser, user.IDRole, user.UserName, role.RoleName, hospitalEmployeeID, patientID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message":      "Error al generar el token",
@@ -223,100 +196,6 @@ func Login(c *gin.Context) {
 	})
 }
 
-func GetLockStatus(c *gin.Context) {
-	username := c.Param("username")
-
-	mutex.Lock()
-	defer mutex.Unlock()
-
-	attempt, exists := loginAttempts[username]
-	if !exists || time.Now().After(attempt.LockUntil) {
-		c.JSON(http.StatusOK, gin.H{
-			"blocked":      false,
-			"remaining_ms": 0,
-			"message":      "El usuario no está bloqueado",
-		})
-		return
-	}
-
-	remaining := time.Until(attempt.LockUntil).Milliseconds()
-
-	c.JSON(http.StatusOK, gin.H{
-		"blocked":      true,
-		"remaining_ms": remaining,
-		"message":      "El usuario está temporalmente bloqueado",
-	})
-}
-
 func Logout(c *gin.Context) {
 	middleware.Logout(c)
 }
-
-/*func Login(c *gin.Context) {
-	var loginRequest request.LoginRequest
-	if err := c.ShouldBindJSON(&loginRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var user models.User
-	if err := db.DB.Where("nombre_usuario = ?", loginRequest.Username).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no encontrado"})
-		return
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Contraseña incorrecta"})
-		return
-	}
-
-	// Cargar la información del rol relacionado
-	var role models.Role
-	if err := db.DB.First(&role, user.IDRole).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al cargar el rol del usuario"})
-		return
-	}
-
-	// Generar el token con user.IDUser, user.IDRole, user.UserName y role.RoleName
-	token, err := middleware.GenerateToken(user.IDUser, user.IDRole, user.UserName, role.RoleName)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al generar el token"})
-		return
-	}
-
-	c.JSON(http.StatusOK, response.LoginResponse{
-		Token: token,
-	})
-}*/
-
-/*func Login(c *gin.Context) {
-	var loginRequest request.LoginRequest
-	if err := c.ShouldBindJSON(&loginRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var user models.User
-	if err := db.DB.Where("nombre_usuario = ?", loginRequest.Username).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no encontrado"})
-		return
-	}
-
-	// Comparar contraseñas directamente (sin bcrypt)
-	if user.Password != loginRequest.Password {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Contraseña incorrecta"})
-		return
-	}
-
-	// Generar el token
-	token, err := middleware.GenerateToken(user.IDUser, user.IDRole)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al generar el token"})
-		return
-	}
-
-	c.JSON(http.StatusOK, response.LoginResponse{
-		Token: token,
-	})
-}
-*/

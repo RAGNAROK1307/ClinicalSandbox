@@ -2,8 +2,7 @@ package request
 
 type CreateMedicalRecordAndRelatedDTO struct {
 	// Campos para MedicalRecord
-	IDPatient uint `json:"id_paciente" binding:"required"`
-	//PatientImage       string `json:"imagen_paciente" binding:"required"`
+	IDPatient          uint   `json:"id_paciente" binding:"required"`
 	PreviousDiagnoses  string `json:"diagnosticos_previos"`
 	ChronicDiseases    string `json:"enfermedades_cronicas"`
 	Allergies          string `json:"alergias"`

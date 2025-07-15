@@ -8,9 +8,7 @@ import (
 	"encoding/base64"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
-	"log"
 	"net/http"
-	"strings"
 	_ "time"
 )
 
@@ -28,7 +26,6 @@ import (
 func UploadDiagnosticImage(c *gin.Context) {
 	imageID := c.Param("id")
 
-	// Verificar si existe la imagen diagnóstica
 	var diagnosticImage models.DiagnosticImage
 	if err := db.DB.First(&diagnosticImage, imageID).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Diagnostic image not found"})
@@ -41,13 +38,12 @@ func UploadDiagnosticImage(c *gin.Context) {
 		return
 	}
 
-	// Validar tamaño del archivo (max 10MB)
-	if file.Size > 10<<20 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds 10MB limit"})
-		return
-	}
+	// ❌ Eliminado: Validación de tamaño de archivo
+	// if file.Size > 10<<20 {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds 10MB limit"})
+	// 	return
+	// }
 
-	// Leer el archivo
 	src, err := file.Open()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file"})
@@ -55,47 +51,46 @@ func UploadDiagnosticImage(c *gin.Context) {
 	}
 	defer src.Close()
 
-	// Validar que es una imagen
-	buff := make([]byte, 512)
-	if _, err := src.Read(buff); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image file"})
-		return
-	}
+	// ❌ Eliminado: Validación de que es una imagen
+	// buff := make([]byte, 512)
+	// if _, err := src.Read(buff); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image file"})
+	// 	return
+	// }
 
-	mimeType := http.DetectContentType(buff)
-	if !strings.HasPrefix(mimeType, "image/") {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Uploaded file is not an image"})
-		return
-	}
+	// mimeType := http.DetectContentType(buff)
+	// if !strings.HasPrefix(mimeType, "image/") {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Uploaded file is not an image"})
+	// 	return
+	// }
 
-	// Volver al inicio del archivo
-	if _, err := src.Seek(0, 0); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process image"})
-		return
-	}
+	// if _, err := src.Seek(0, 0); err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process image"})
+	// 	return
+	// }
 
-	// Convertir a Base64
 	buf := new(bytes.Buffer)
 	if _, err := buf.ReadFrom(src); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process image"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
 		return
 	}
 	imageBase64 := base64.StdEncoding.EncodeToString(buf.Bytes())
 
-	// Actualizar en la base de datos
+	// Guardar directamente sin verificar tipo ni tamaño
 	tx := db.DB.Begin()
 	if err := tx.Model(&models.DiagnosticImage{}).
 		Where("id_imagen = ?", imageID).
 		Update("ruta_archivo_externo", imageBase64).Error; err != nil {
 		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
 		return
 	}
 	tx.Commit()
 
+	// ❌ mimeType puede estar vacío si no se valida antes
 	c.JSON(http.StatusOK, response.DiagnosticImageFileResponseDTO{
 		Image:    imageBase64,
-		MimeType: mimeType,
+		MimeType: "application/octet-stream", // tipo genérico
 	})
 }
 
@@ -170,13 +165,12 @@ func UpdateDiagnosticImageFile(c *gin.Context) {
 		return
 	}
 
-	// Validar tamaño del archivo (max 10MB)
-	if file.Size > 10<<20 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds 10MB limit"})
-		return
-	}
+	// ❌ Eliminado: Validación de tamaño
+	// if file.Size > 10<<20 {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "File size exceeds 10MB limit"})
+	// 	return
+	// }
 
-	// Leer y validar el archivo
 	src, err := file.Open()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read file"})
@@ -184,34 +178,32 @@ func UpdateDiagnosticImageFile(c *gin.Context) {
 	}
 	defer src.Close()
 
-	// Validar tipo de archivo (debe ser imagen)
-	buff := make([]byte, 512)
-	if _, err := src.Read(buff); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image file"})
-		return
-	}
+	// ❌ Eliminado: Validación del tipo de archivo
+	// buff := make([]byte, 512)
+	// if _, err := src.Read(buff); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid image file"})
+	// 	return
+	// }
 
-	mimeType := http.DetectContentType(buff)
-	if !strings.HasPrefix(mimeType, "image/") {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Uploaded file is not an image"})
-		return
-	}
+	// mimeType := http.DetectContentType(buff)
+	// if !strings.HasPrefix(mimeType, "image/") {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": "Uploaded file is not an image"})
+	// 	return
+	// }
 
-	// Volver al inicio del archivo para leerlo completo
-	if _, err := src.Seek(0, 0); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process image"})
-		return
-	}
+	// if _, err := src.Seek(0, 0); err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
+	// 	return
+	// }
 
-	// Convertir a Base64
 	buf := new(bytes.Buffer)
 	if _, err := buf.ReadFrom(src); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process image"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to process file"})
 		return
 	}
 	imageBase64 := base64.StdEncoding.EncodeToString(buf.Bytes())
 
-	// Actualizar en la base de datos con transacción
+	// Guardar sin validaciones
 	tx := db.DB.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -223,7 +215,7 @@ func UpdateDiagnosticImageFile(c *gin.Context) {
 		Where("id_imagen = ?", imageID).
 		Update("ruta_archivo_externo", imageBase64).Error; err != nil {
 		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update image"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update file"})
 		return
 	}
 
@@ -232,12 +224,10 @@ func UpdateDiagnosticImageFile(c *gin.Context) {
 		return
 	}
 
-	// Registrar la actualización
-	log.Printf("Image updated for diagnostic ID: %s", imageID)
-
+	// ❌ Tipo MIME genérico
 	c.JSON(http.StatusOK, response.DiagnosticImageFileResponseDTO{
 		Image:    imageBase64,
-		MimeType: mimeType,
+		MimeType: "application/octet-stream",
 	})
 }
 

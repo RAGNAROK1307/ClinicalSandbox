@@ -3,9 +3,7 @@ package response
 import "time"
 
 type MedicalRecordResponseDTO struct {
-	IDPatient uint `json:"id_paciente"` // ID del rol asociado, requerido
-	//IDConsultationVisit     uint      `json:"id_consulta"`
-	//IDTreatmentPrescription uint      `json:"id_tratamiento"`
+	IDPatient           uint      `json:"id_paciente"`
 	PatientImage        string    `json:"imagen_paciente"`
 	PreviousDiagnoses   string    `json:"diagnosticos_previos"`
 	ChronicDiseases     string    `json:"enfermedades_cronicas"`

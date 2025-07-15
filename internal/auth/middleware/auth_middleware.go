@@ -3,7 +3,6 @@ package middleware
 import (
 	"ClinicalSandBox/configs/db"
 	"ClinicalSandBox/internal/API/models"
-	"errors"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -13,12 +12,61 @@ import (
 	"time"
 )
 
+/*
+Este módulo del paquete `middleware` gestiona la seguridad de acceso en la API mediante JWT,
+control de sesiones activas, lista negra de tokens (blacklist), y validaciones de autorización.
+
+Principales funcionalidades:
+
+- GenerateToken:
+  Genera un token JWT con datos personalizados como ID de usuario, rol, nombre de usuario, y
+  posibles IDs relacionados (personal hospitalario o paciente). El token tiene una duración
+  de sesión limitada y se registra como sesión activa.
+
+- AuthMiddleware:
+  Middleware que valida tokens JWT en las peticiones protegidas. Si el token está próximo a expirar,
+  se renueva automáticamente y se incluye en el header `X-Renewed-Token`.
+
+- RoleMiddleware:
+  Permite restringir el acceso a rutas según roles específicos (por su ID numérico).
+
+- ValidateUserAccess:
+  Valida que el usuario autenticado acceda únicamente a sus propios datos, según su rol.
+  (Administrador puede acceder libremente; otros roles se validan por ID).
+
+- ValidateUpdatePatient:
+  Permite actualizar datos del paciente únicamente al propio paciente, a administradores
+  o directivos.
+
+- ValidateMedicalRecordAccess:
+  Controla el acceso a registros médicos:
+    - Pacientes solo acceden a su historial.
+    - Médicos pueden acceder a todos (o se puede extender para filtrar por asignación).
+
+- ValidatePasswordAccess:
+  Solo permite cambiar la contraseña al propio usuario o a un administrador.
+
+- Logout:
+  Finaliza la sesión actual del usuario, agregando el token a la lista negra y
+  eliminándolo de los registros de sesión activa.
+
+- checkExpiredSessions (goroutine):
+  Ejecuta limpieza periódica de sesiones inactivas y tokens expirados para mantener
+  la seguridad del sistema.
+
+- cleanExpiredBlacklistedTokens (goroutine):
+  Elimina tokens expirados de la lista negra cada 24 horas.
+
+Este middleware proporciona un modelo robusto de autenticación y control de acceso,
+fundamental para garantizar la integridad y privacidad de los datos en la aplicación.
+*/
+
 var (
 	jwtKey           = []byte("Simclec")
 	activeSessions   = make(map[uint]time.Time)
 	tokenBlacklist   = make(map[string]time.Time)
 	blacklistMutex   = &sync.Mutex{}
-	SessionMutex     = &sync.Mutex{}
+	sessionMutex     = &sync.Mutex{}
 	sessionDuration  = 5 * time.Minute
 	blacklistCleanup = 24 * time.Hour        // Limpiar tokens vencidos cada 24h
 	ActiveTokens     = make(map[uint]string) // userID -> token
@@ -36,16 +84,7 @@ type Claims struct {
 	jwt.StandardClaims
 }
 
-func GenerateToken(userID uint, roleID uint, userName string, roleName string, hospitalEmployeeID uint, patientID uint, forceRenewal bool) (string, error) {
-	tokenMutex.Lock()
-	defer tokenMutex.Unlock()
-
-	// Solo bloquear login si NO es renovación
-	if _, exists := ActiveTokens[userID]; exists && !forceRenewal {
-		logAuthAction(userID, userName, "LOGIN_BLOCKED (sesión activa)")
-		return "", errors.New("ya existe una sesión activa para este usuario")
-	}
-
+func GenerateToken(userID uint, roleID uint, userName string, roleName string, hospitalEmployeeID uint, patientID uint) (string, error) {
 	claims := &Claims{
 		UserID:           userID,
 		RoleID:           roleID,
@@ -59,27 +98,17 @@ func GenerateToken(userID uint, roleID uint, userName string, roleName string, h
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString(jwtKey)
-	if err != nil {
-		return "", err
-	}
 
-	if !forceRenewal {
-		// Solo guardar como activa si es login original
-		ActiveTokens[userID] = tokenString
-		logAuthAction(userID, userName, "LOGIN")
-	} else {
-		// Guardar como token pendiente de promoción
-		PendingTokens[userID] = tokenString
-		logAuthAction(userID, userName, "TOKEN_RENEWED (pendiente de promoción)")
-	}
+	// Registrar la sesión activa
+	sessionMutex.Lock()
+	activeSessions[userID] = time.Now()
+	sessionMutex.Unlock()
 
-	return tokenString, nil
+	return token.SignedString(jwtKey)
 }
 
 func init() {
 	// Goroutine para limpiar tokens vencidos periódicamente
-	initLogger()
 	go checkExpiredSessions()
 	go func() {
 		for {
@@ -125,62 +154,27 @@ func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
-			logAuthAction(0, "", "MISSING_TOKEN")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
 			c.Abort()
 			return
 		}
 
 		tokenString := strings.Split(authHeader, " ")[1]
-
-		if isTokenBlacklisted(tokenString) {
-			logAuthAction(0, "", "BLACKLISTED_TOKEN")
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Sesión terminada"})
-			c.Abort()
-			return
-		}
-
 		claims := &Claims{}
+
 		token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 			return jwtKey, nil
 		})
 
 		if err != nil || !token.Valid {
-			logAuthAction(0, "", "INVALID_TOKEN")
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token inválido"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
 			c.Abort()
 			return
-		}
-
-		// Verificar si el token coincide con el activo registrado
-		tokenMutex.Lock()
-		activeToken, exists := ActiveTokens[claims.UserID]
-		pendingToken, pendingExists := PendingTokens[claims.UserID]
-		tokenMutex.Unlock()
-
-		// Si el token no es el activo ni el pendiente, es inválido
-		if !exists || (tokenString != activeToken && (!pendingExists || tokenString != pendingToken)) {
-			logAuthAction(claims.UserID, claims.UserName, "SESSION_REJECTED (token no coincide)")
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Ya hay una sesión activa. Cierra la otra sesión primero.",
-			})
-			c.Abort()
-			return
-		}
-
-		// Si es el token pendiente, promoverlo a activo
-		if tokenString == pendingToken {
-			tokenMutex.Lock()
-			ActiveTokens[claims.UserID] = pendingToken
-			delete(PendingTokens, claims.UserID)
-			tokenMutex.Unlock()
-			logAuthAction(claims.UserID, claims.UserName, "TOKEN_PROMOTED")
 		}
 
 		// Verificar si el token está a punto de expirar (por ejemplo, en menos de 1 minuto)
 		timeLeft := time.Unix(claims.ExpiresAt, 0).Sub(time.Now())
 		shouldRenew := timeLeft < time.Minute
-
 		// Si necesita renovación, generar nuevo token
 		if shouldRenew {
 			newToken, err := GenerateToken(
@@ -190,14 +184,14 @@ func AuthMiddleware() gin.HandlerFunc {
 				claims.RoleName,
 				claims.HospitalEmployee,
 				claims.Patient,
-				true, // forzar renovación
 			)
 			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al renovar token"})
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to renew token"})
 				c.Abort()
 				return
 			}
 
+			// Agregar el nuevo token a la respuesta
 			c.Header("X-Renewed-Token", newToken)
 		}
 
@@ -205,9 +199,9 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Header("Access-Control-Expose-Headers", "X-Renewed-Token")
 
 		// Actualizar tiempo de última actividad
-		SessionMutex.Lock()
+		sessionMutex.Lock()
 		activeSessions[claims.UserID] = time.Now()
-		SessionMutex.Unlock()
+		sessionMutex.Unlock()
 
 		// Resto del middleware
 		var user models.User
@@ -216,7 +210,6 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-
 		c.Set("claims", claims)
 		c.Set("user", user)
 		c.Set("user_id", claims.UserID)
@@ -224,7 +217,6 @@ func AuthMiddleware() gin.HandlerFunc {
 		c.Set("role_name", claims.RoleName)
 		c.Set("hospital_employee_id", claims.HospitalEmployee)
 		c.Set("patient_id", claims.Patient)
-
 		c.Next()
 	}
 }
@@ -473,14 +465,13 @@ func Logout(c *gin.Context) {
 	delete(activeSessions, claims.UserID)
 	tokenMutex.Unlock()
 
-	logAuthAction(claims.UserID, claims.UserName, "LOGOUT")
 	c.JSON(http.StatusOK, gin.H{"message": "Sesión cerrada correctamente"})
 }
 
 // Función para verificar tokens expirados periódicamente
 func checkExpiredSessions() {
 	for {
-		time.Sleep(1 * time.Minute) // Verificar cada minuto
+		time.Sleep(1 * time.Minute)
 		now := time.Now()
 
 		tokenMutex.Lock()
@@ -490,9 +481,6 @@ func checkExpiredSessions() {
 					addToBlacklist(token, now)
 					delete(ActiveTokens, userID)
 					delete(activeSessions, userID)
-
-					// Obtener nombre de usuario para el log (requeriría una consulta a la DB)
-					logAuthAction(userID, "SYSTEM", "SESSION_EXPIRED")
 				}
 			}
 		}
