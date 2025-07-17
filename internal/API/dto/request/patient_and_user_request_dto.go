@@ -1,9 +1,8 @@
 package request
 
 type CreateUserAndPatientDTO struct {
-	UserName string `json:"nombre_usuario" binding:"required"`
-	Password string `json:"contraseña" binding:"required,min=8"`
-	//IDRole                  uint   `json:"id_rol" binding:"required"`
+	UserName                string `json:"nombre_usuario" binding:"required"`
+	Password                string `json:"contraseña" binding:"required,min=8"`
 	FullName                string `json:"nombre_completo" binding:"required"`
 	BirthDate               string `json:"fecha_nacimiento" binding:"required" example:"2025-01-20"`
 	Gender                  string `json:"genero" binding:"required"`
@@ -19,9 +18,7 @@ type CreateUserAndPatientDTO struct {
 }
 
 type UpdateUserAndPatientDTO struct {
-	UserName string `json:"nombre_usuario" binding:"omitempty"`
-	//Password                string `json:"contraseña" binding:"required,min=8"`
-	//IDRole                  uint   `json:"id_rol" binding:"omitempty"`
+	UserName                string `json:"nombre_usuario" binding:"omitempty"`
 	FullName                string `json:"nombre_completo" binding:"omitempty"`
 	BirthDate               string `json:"fecha_nacimiento" binding:"omitempty" example:"2025-01-20"`
 	Gender                  string `json:"genero" binding:"omitempty"`

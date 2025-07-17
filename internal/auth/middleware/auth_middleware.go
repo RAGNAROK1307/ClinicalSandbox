@@ -13,6 +13,58 @@ import (
 	"time"
 )
 
+/*
+Este módulo del paquete `middleware` implementa un sistema avanzado de autenticación y control de sesiones
+basado en JWT para un sistema de gestión clínica. Incluye seguridad mejorada con control de tokens activos,
+renovación automática, blacklist, y registro de auditoría.
+
+FUNCIONALIDADES PRINCIPALES:
+
+- GenerateToken:
+  Genera tokens JWT con datos extendidos del usuario (ID, rol, nombres, paciente o personal hospitalario).
+  Controla si ya hay una sesión activa e impide múltiples inicios simultáneos. Soporta renovación forzada.
+
+- AuthMiddleware:
+  Middleware de autenticación que:
+    • Valida el token recibido.
+    • Verifica si el token pertenece al usuario autenticado y si no ha sido invalidado.
+    • Permite renovar automáticamente tokens próximos a expirar.
+    • Promueve un token renovado a sesión activa si corresponde.
+
+- RoleMiddleware:
+  Restringe acceso a rutas según los roles permitidos (por su ID).
+
+- ValidateUserAccess:
+  Permite que los usuarios accedan solo a sus propios recursos. Admin accede sin restricción.
+  Verifica que el ID en la URL coincida con el asociado al usuario autenticado.
+
+- ValidateUpdatePatient:
+  Controla quién puede modificar datos del paciente. Solo pacientes, directivos y administradores
+  tienen permisos según su relación.
+
+- ValidateMedicalRecordAccess:
+  Control de acceso a historias clínicas. Pacientes pueden ver sus propios registros, médicos pueden
+  ver todos (puede extenderse a lógica adicional). Otros roles no tienen acceso.
+
+- ValidatePasswordAccess:
+  Asegura que los usuarios solo puedan modificar su propia contraseña, excepto administradores.
+
+- Logout:
+  Finaliza la sesión del usuario. Mueve el token a la blacklist, elimina las referencias activas,
+  y registra la acción de cierre de sesión.
+
+- checkExpiredSessions (goroutine):
+  Revisa periódicamente (cada minuto) las sesiones activas para invalidar tokens por inactividad.
+  Los tokens expirados se añaden a la blacklist.
+
+- cleanExpiredBlacklistedTokens (goroutine):
+  Limpia cada 24 horas los tokens expirados de la lista negra para mantener el sistema limpio.
+
+Este middleware también registra cada acción de autenticación mediante `logAuthAction`, útil para
+auditoría y trazabilidad. El diseño favorece la seguridad, control de acceso detallado por rol,
+y manejo inteligente de sesiones concurrentes.
+*/
+
 var (
 	jwtKey           = []byte("Simclec")
 	activeSessions   = make(map[uint]time.Time)

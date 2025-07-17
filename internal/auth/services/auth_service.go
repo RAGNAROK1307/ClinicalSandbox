@@ -15,6 +15,51 @@ import (
 	"time"
 )
 
+/*
+Este módulo define los servicios relacionados con el inicio y cierre de sesión, incluyendo
+el manejo de intentos fallidos de autenticación, bloqueo temporal de cuentas, generación
+de tokens JWT y recuperación del estado de bloqueo de un usuario.
+
+FUNCIONALIDADES PRINCIPALES:
+
+- Login:
+  • Valida el cuerpo de la solicitud de login (usuario y contraseña).
+  • Registra y evalúa intentos fallidos. Tras 3 intentos, bloquea progresivamente al usuario:
+      Ejemplo: 3 intentos = 1 min, 4 = 2 min, 5 = 4 min, etc.
+  • Verifica existencia del usuario, contraseña, y carga información de rol.
+  • Determina si el usuario tiene una sesión activa (restringiendo múltiples sesiones).
+  • Genera y retorna un token JWT en caso de autenticación exitosa.
+
+- registerFailedAttempt:
+  • Aumenta el contador de intentos fallidos de un usuario.
+  • Si se supera el umbral (3), aplica un tiempo de bloqueo exponencial.
+
+- resetFailedAttempts:
+  • Limpia el historial de intentos fallidos una vez que el usuario se autentica correctamente.
+
+- GetLockStatus:
+  • Devuelve el estado de bloqueo de un usuario, con el tiempo restante en milisegundos si aplica.
+
+- Logout:
+  • Invoca la función de cierre de sesión definida en el middleware.
+  • Elimina la sesión activa y blacklistea el token actual.
+
+ESTRUCTURAS:
+
+- LoginAttempt:
+  Representa el estado de intentos fallidos y tiempo de bloqueo para un usuario.
+
+- loginAttempts (map):
+  Registro en memoria de intentos fallidos y bloqueos, indexado por nombre de usuario.
+
+ESTRATEGIA DE BLOQUEO:
+  - Se utiliza un mecanismo de retroalimentación exponencial: cada intento fallido posterior
+    a tres duplica el tiempo de bloqueo, incrementando así la protección contra fuerza bruta.
+
+Este servicio forma parte crítica del sistema de autenticación del sistema clínico,
+y trabaja en conjunto con el middleware para asegurar sesiones seguras y controladas.
+*/
+
 type LoginAttempt struct {
 	FailedAttempts int
 	LockUntil      time.Time
@@ -251,72 +296,3 @@ func GetLockStatus(c *gin.Context) {
 func Logout(c *gin.Context) {
 	middleware.Logout(c)
 }
-
-/*func Login(c *gin.Context) {
-	var loginRequest request.LoginRequest
-	if err := c.ShouldBindJSON(&loginRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var user models.User
-	if err := db.DB.Where("nombre_usuario = ?", loginRequest.Username).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no encontrado"})
-		return
-	}
-
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginRequest.Password)); err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Contraseña incorrecta"})
-		return
-	}
-
-	// Cargar la información del rol relacionado
-	var role models.Role
-	if err := db.DB.First(&role, user.IDRole).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al cargar el rol del usuario"})
-		return
-	}
-
-	// Generar el token con user.IDUser, user.IDRole, user.UserName y role.RoleName
-	token, err := middleware.GenerateToken(user.IDUser, user.IDRole, user.UserName, role.RoleName)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al generar el token"})
-		return
-	}
-
-	c.JSON(http.StatusOK, response.LoginResponse{
-		Token: token,
-	})
-}*/
-
-/*func Login(c *gin.Context) {
-	var loginRequest request.LoginRequest
-	if err := c.ShouldBindJSON(&loginRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var user models.User
-	if err := db.DB.Where("nombre_usuario = ?", loginRequest.Username).First(&user).Error; err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Usuario no encontrado"})
-		return
-	}
-
-	// Comparar contraseñas directamente (sin bcrypt)
-	if user.Password != loginRequest.Password {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Contraseña incorrecta"})
-		return
-	}
-
-	// Generar el token
-	token, err := middleware.GenerateToken(user.IDUser, user.IDRole)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al generar el token"})
-		return
-	}
-
-	c.JSON(http.StatusOK, response.LoginResponse{
-		Token: token,
-	})
-}
-*/

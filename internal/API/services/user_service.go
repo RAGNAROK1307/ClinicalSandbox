@@ -63,42 +63,6 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"user": userResponse})
 }
 
-/*func CreateUser(c *gin.Context) {
-	var userDTO request.CreateUserDTO
-
-	// Bind JSON to userDTO
-	if err := c.ShouldBindJSON(&userDTO); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
-		return
-	}
-
-	// Mapea a modelo User
-	user := models.User{
-		IDRole:   userDTO.IDRole,
-		UserName: userDTO.UserName,
-		Password: userDTO.Password,
-	}
-
-	// Guarda el nuevo usuario en la base de datos
-	if err := db.DB.Create(&user).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
-		return
-	}
-
-	var role models.Role
-	db.DB.First(&role, user.IDRole)
-
-	// Generar la respuesta con UserResponseDTO
-	userResponse := response.UserResponseDTO{
-		IDUser:   user.IDUser,
-		UserName: user.UserName,
-		RoleName: role.RoleName,
-	}
-
-	c.JSON(http.StatusCreated, gin.H{"user": userResponse})
-	//c.JSON(http.StatusCreated, gin.H{"user": user})
-}*/
-
 // GetUsers godoc
 // @Summary List all users
 // @Description Retrieve a list of all users in the system
@@ -119,13 +83,11 @@ func GetUsers(c *gin.Context) {
 		usersResponse = append(usersResponse, response.UserResponseDTO{
 			IDUser:   user.IDUser,
 			UserName: user.UserName,
-			RoleName: user.Role.RoleName, // Aquí accedemos correctamente al nombre del rol
-			//Password: user.Password,
+			RoleName: user.Role.RoleName,
 		})
 	}
 
 	c.JSON(http.StatusOK, gin.H{"users": usersResponse})
-	//c.JSON(http.StatusOK, gin.H{"users": users})
 }
 
 // GetUser godoc
@@ -148,11 +110,10 @@ func GetUser(c *gin.Context) {
 	userResponse := response.UserResponseDTO{
 		IDUser:   user.IDUser,
 		UserName: user.UserName,
-		RoleName: user.Role.RoleName, // Asegúrate de que el campo en Role sea `NombreRol`
+		RoleName: user.Role.RoleName,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"user": userResponse})
-	//c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
 // UpdateUser godoc

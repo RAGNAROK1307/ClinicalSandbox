@@ -14,8 +14,7 @@ type CreateHospitalEmployeeAndUserDTO struct {
 }
 
 type UpdateHospitalEmployeeAndUserDTO struct {
-	UserName string `json:"nombre_usuario" binding:"omitempty"`
-	//Password       string `json:"contraseña" binding:"omitempty,min=8"` // No es requerida en PUT
+	UserName       string `json:"nombre_usuario" binding:"omitempty"`
 	FullName       string `json:"nombre_completo" binding:"omitempty"`
 	BirthDate      string `json:"fecha_nacimiento" binding:"omitempty" example:"2025-01-20"`
 	Gender         string `json:"genero" binding:"omitempty"`

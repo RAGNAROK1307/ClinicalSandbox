@@ -75,4 +75,7 @@ func SeedRoles() {
 	fmt.Printf("📊 Directivo: %d\n", DirectivoID)
 	fmt.Printf("🧑‍⚕️ Paciente: %d\n", PacienteID)
 	fmt.Printf("🛠️ Administrador: %d\n", AdminID)
+
+	// Verificar o crear el usuario administrador
+	SeedAdminUser()
 }
