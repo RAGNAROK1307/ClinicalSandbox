@@ -19,7 +19,7 @@ func Routes() {
 	r.MaxMultipartMemory = 5 << 20 // 5 MB
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"https://simclec.unillanoscyseth.edu.co"}, //
+		AllowOrigins:     []string{"https://simclec.unillanoscyseth.edu.co"}, //https://simclec.unillanoscyseth.edu.co
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,

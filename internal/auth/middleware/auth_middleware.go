@@ -71,7 +71,7 @@ var (
 	tokenBlacklist   = make(map[string]time.Time)
 	blacklistMutex   = &sync.Mutex{}
 	SessionMutex     = &sync.Mutex{}
-	sessionDuration  = 5 * time.Minute
+	sessionDuration  = 10 * time.Minute
 	blacklistCleanup = 24 * time.Hour        // Limpiar tokens vencidos cada 24h
 	ActiveTokens     = make(map[uint]string) // userID -> token
 	PendingTokens    = make(map[uint]string)
