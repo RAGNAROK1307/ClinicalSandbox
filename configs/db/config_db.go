@@ -17,7 +17,7 @@ var DB *gorm.DB
 // En caso de error al conectarse, la aplicación se detendrá con un mensaje de error.
 // Si la conexión es exitosa, se mostrará un mensaje en consola confirmando la conexión.
 func ConnectDB() {
-	dsn := "host=localhost user=postgres password=Santiago1307 dbname=bd_sandbox port=5432 sslmode=disable"
+	dsn := "host=localhost user=postgres password=Vulcilab2025* dbname=bd_vulcilab port=5432 sslmode=disable"
 	var err error
 	// Se intenta abrir la conexión usando el driver de PostgreSQL con GORM
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})

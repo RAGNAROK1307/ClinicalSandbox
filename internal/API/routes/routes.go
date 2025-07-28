@@ -16,9 +16,10 @@ import (
 func Routes() {
 
 	r := gin.Default()
+	r.MaxMultipartMemory = 5 << 20 // 5 MB
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"}, //
+		AllowOrigins:     []string{"*"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
@@ -92,7 +93,7 @@ func Routes() {
 
 		}
 
-		// Rutas para médicos
+		// Rutas para médicos (Rol 7)
 		doctor := auth.Group("/")
 		doctor.Use(authMiddleware.RoleMiddleware(db.MedicoID))
 		{
@@ -211,7 +212,8 @@ func Routes() {
 		doctorAndPatient.GET("/consultation_visits/:id", authMiddleware.ValidateMedicalRecordAccess(), services2.GetConsultationVisit)
 
 		doctorAndPatient.GET("/medical_records/:id", authMiddleware.ValidateMedicalRecordAccess(), services2.GetMedicalRecord)
-		doctorAndPatient.GET("/medical-records-and-related/:id", services2.GetMedicalRecordAndRelated)
+
+		doctorAndPatient.GET("/medical-records-and-related/:id", authMiddleware.ValidateMedicalRecordAccess(), services2.GetMedicalRecordAndRelated)
 	}
 
 	r.Run(":8080")

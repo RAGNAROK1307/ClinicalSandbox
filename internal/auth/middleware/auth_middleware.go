@@ -62,7 +62,7 @@ fundamental para garantizar la integridad y privacidad de los datos en la aplica
 */
 
 var (
-	jwtKey           = []byte("Simclec")
+	jwtKey           = []byte("Vulcilab")
 	activeSessions   = make(map[uint]time.Time)
 	tokenBlacklist   = make(map[string]time.Time)
 	blacklistMutex   = &sync.Mutex{}
